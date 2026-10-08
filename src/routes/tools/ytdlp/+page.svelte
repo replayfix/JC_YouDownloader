@@ -39,6 +39,72 @@
     type SkippedDetails,
   } from "$lib/ytdlp/download-page"
 
+  import { parseBulkLinks, decodeLinksFile } from "$lib/utils/bulk-links.js"
+  let bulkExpanded = $state(false)
+  let bulkText = $state("")
+  let bulkBusy = $state(false)
+  let bulkCancelled = $state(false)
+  let bulkProgress = $state(0)
+  let bulkFileInput = $state<HTMLInputElement | null>(null)
+  let bulkFailures = $state<{ url: string; message: string }[]>([])
+  const bulkParsed = $derived(parseBulkLinks(bulkText))
+
+  async function importBulkFile(event: Event) {
+    const input = event.currentTarget as HTMLInputElement
+    const file = input.files?.[0]
+    if (!file) return
+    try {
+      if (file.size > 2 * 1024 * 1024) throw new Error(t("bulk.fileTooLarge"))
+      const text = decodeLinksFile(new Uint8Array(await file.arrayBuffer()))
+      bulkText = bulkText.trim() ? bulkText.trimEnd() + "\n" + text : text
+      bulkFailures = []
+    } catch (err) { error = errorMessage(err); errorKey = null }
+    finally { input.value = "" }
+  }
+
+  async function pasteBulkLinks() {
+    try {
+      const text = await readText()
+      if (text) bulkText = bulkText.trim() ? bulkText.trimEnd() + "\n" + text : text
+    } catch (err) { error = errorMessage(err); errorKey = null }
+  }
+
+  async function downloadBulkLinks() {
+    if (bulkBusy || downloadingAll || preparingDownload || downloading || analyzing || scanning) return
+    const parsed = parseBulkLinks(bulkText)
+    if (!parsed.urls.length || parsed.urls.length > 500 || parsed.invalid.length) return
+    bulkBusy = true
+    downloadingAll = true
+    bulkCancelled = false
+    bulkProgress = 0
+    bulkFailures = []
+    error = null
+    errorKey = null
+    notice = null
+    const entries: PlaylistDownloadEntry[] = []
+    try {
+      for (const link of parsed.urls) {
+        if (bulkCancelled) return
+        try {
+          const result = await commands.fetchVideoInfo(link)
+          if (result.status === "error") throw result.error
+          entries.push({ url: result.data.url, videoId: result.data.videoId, title: result.data.title })
+        } catch (err) { bulkFailures.push({ url: link, message: extractError(err) }) }
+        bulkProgress++
+      }
+      if (bulkCancelled) return
+      if (entries.length && !(await enqueueBatchDownloads(entries, t("bulk.title")))) return
+      // Preserve unsuccessful links for retry instead of silently discarding them.
+      bulkText = bulkFailures.map(failure => failure.url).join("\n")
+      notice = [notice, t("bulk.finished", { count: entries.length, failed: bulkFailures.length })].filter(Boolean).join(" ")
+    } catch (err) { error = errorMessage(err); errorKey = null }
+    finally {
+      bulkBusy = false
+      downloadingAll = false
+      batchProgress = { current: 0, total: 0 }
+    }
+  }
+
   // URL & analyze state
   let url = $state("")
   let analyzing = $state(false)
@@ -263,6 +329,7 @@
   })
 
   onDestroy(() => {
+    bulkCancelled = true
     stopAnalyzeTimer()
     unlistenScan?.()
     unlistenScan = null
@@ -778,7 +845,7 @@
 
   // Returns true when the batch is enqueued (or every entry was skipped as a duplicate),
   // false when the backend rejected it — callers must keep the page state for a retry then.
-  async function enqueueBatchDownloads(entries: PlaylistDownloadEntry[]): Promise<boolean> {
+  async function enqueueBatchDownloads(entries: PlaylistDownloadEntry[], groupName?: string): Promise<boolean> {
     const generation = analyzeGeneration
     const totalCount = entries.length
     batchProgress = { current: 0, total: totalCount }
@@ -823,7 +890,7 @@
     })
 
     // Backend creates a group iff a title is given AND 2+ requests survive.
-    const groupTitle = survivors.length >= 2 ? (playlistResult?.title ?? null) : null
+    const groupTitle = survivors.length >= 2 ? (groupName ?? playlistResult?.title ?? null) : null
     const result = await commands.addToQueueBatch(requests, groupTitle, null)
     batchProgress = { current: totalCount, total: totalCount }
 
@@ -1116,6 +1183,38 @@
              <span>{t("download.download")}</span>
           {/if}
         </button>
+      </div>
+
+      <!-- Multiple links and text-file import -->
+      <div class="mt-3">
+        <button type="button" class="text-sm text-yt-primary hover:underline" onclick={() => bulkExpanded = !bulkExpanded} disabled={bulkBusy} aria-expanded={bulkExpanded}>
+          {t("bulk.title")}
+        </button>
+        {#if bulkExpanded}
+          <div class="mt-2 rounded-lg border border-yt-border bg-yt-surface/30 p-3 space-y-3">
+            <label for="bulk-links" class="block text-xs text-yt-text-secondary">{t("bulk.help")}</label>
+            <textarea id="bulk-links" bind:value={bulkText} disabled={bulkBusy} rows="5" class="w-full rounded-md border border-yt-border bg-yt-bg p-3 text-sm text-yt-text focus:outline-none focus:border-yt-primary resize-y" placeholder={t("bulk.placeholder")}></textarea>
+            <p class="text-xs text-yt-text-secondary">{t("bulk.count", { count: bulkParsed.urls.length, duplicates: bulkParsed.duplicates, invalid: bulkParsed.invalid.length })}</p>
+            {#if bulkParsed.invalid.length || bulkParsed.urls.length > 500}
+              <p class="text-xs text-yt-error">{t("bulk.validation")}</p>
+            {/if}
+            <input type="file" accept=".txt,text/plain" bind:this={bulkFileInput} onchange={importBulkFile} class="hidden" disabled={bulkBusy} aria-label={t("bulk.import")} />
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick={pasteBulkLinks} disabled={bulkBusy} class="px-3 py-2 text-xs rounded-md border border-yt-border hover:bg-yt-highlight disabled:opacity-50">{t("download.pasteFromClipboard")}</button>
+              <button type="button" onclick={() => bulkFileInput?.click()} disabled={bulkBusy} class="px-3 py-2 text-xs rounded-md border border-yt-border hover:bg-yt-highlight disabled:opacity-50">{t("bulk.import")}</button>
+              <button type="button" onclick={downloadBulkLinks} disabled={bulkBusy || downloadingAll || preparingDownload || downloading || analyzing || scanning || !bulkParsed.urls.length || bulkParsed.invalid.length > 0 || bulkParsed.urls.length > 500} class="px-4 py-2 text-xs rounded-md bg-yt-primary hover:bg-yt-primary-hover text-white disabled:opacity-50">{t("download.download")} ({bulkParsed.urls.length})</button>
+              {#if bulkBusy}
+                <span class="self-center text-xs text-yt-text-secondary">{t("bulk.preparing", { current: bulkProgress, total: bulkParsed.urls.length })}</span>
+                <button type="button" onclick={() => bulkCancelled = true} disabled={bulkCancelled} class="px-3 py-2 text-xs rounded-md border border-yt-border disabled:opacity-50">{t("download.cancel")}</button>
+              {/if}
+            </div>
+            {#if bulkFailures.length}
+              <ul class="text-xs text-yt-error space-y-1 max-h-32 overflow-auto">
+                {#each bulkFailures as failure}<li class="break-all">{failure.url}: {failure.message}</li>{/each}
+              </ul>
+            {/if}
+          </div>
+        {/if}
       </div>
 
        <!-- Download Options -->

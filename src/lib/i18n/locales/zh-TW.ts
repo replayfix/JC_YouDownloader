@@ -353,6 +353,15 @@ const zhTW: Record<string, string> = {
   "update.openReleases": "查看已發布版本",
   "update.busy": "更新已在進行中。",
   "update.activeDownloads": "請等待目前的下載完成後再更新。",
+  "bulk.title": "多個連結",
+  "bulk.help": "每行貼上一個連結或匯入 .txt 檔案。將使用所選格式、品質和資料夾。",
+  "bulk.placeholder": "https://www.youtube.com/watch?v=...\nhttps://...",
+  "bulk.count": "有效：{count} · 重複：{duplicates} · 無效：{invalid}",
+  "bulk.validation": "請修正無效行，每批最多500個連結。",
+  "bulk.import": "匯入 .txt",
+  "bulk.fileTooLarge": "檔案超過2 MB限制。",
+  "bulk.preparing": "正在準備 {current}/{total}…",
+  "bulk.finished": "已處理連結：{count}。失敗：{failed}。",
 }
 
 export default zhTW

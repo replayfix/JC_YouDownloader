@@ -353,6 +353,15 @@ const zhCN: Record<string, string> = {
   "update.openReleases": "查看已发布版本",
   "update.busy": "更新已在进行中。",
   "update.activeDownloads": "请等待当前下载完成后再更新。",
+  "bulk.title": "多个链接",
+  "bulk.help": "每行粘贴一个链接或导入 .txt 文件。将使用所选格式、质量和文件夹。",
+  "bulk.placeholder": "https://www.youtube.com/watch?v=...\nhttps://...",
+  "bulk.count": "有效：{count} · 重复：{duplicates} · 无效：{invalid}",
+  "bulk.validation": "请修正无效行，每批最多500个链接。",
+  "bulk.import": "导入 .txt",
+  "bulk.fileTooLarge": "文件超过2 MB限制。",
+  "bulk.preparing": "正在准备 {current}/{total}…",
+  "bulk.finished": "已处理链接：{count}。失败：{failed}。",
 }
 
 export default zhCN

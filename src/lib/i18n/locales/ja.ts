@@ -353,6 +353,15 @@ const ja: Record<string, string> = {
   "update.openReleases": "公開バージョンを見る",
   "update.busy": "更新がすでに進行中です。",
   "update.activeDownloads": "進行中のダウンロードが終了するまで更新をお待ちください。",
+  "bulk.title": "複数のリンク",
+  "bulk.help": "1行に1つのリンクを貼り付けるか、.txt ファイルを読み込んでください。選択した形式・品質・保存先を使用します。",
+  "bulk.placeholder": "https://www.youtube.com/watch?v=...\nhttps://...",
+  "bulk.count": "有効: {count} · 重複: {duplicates} · 無効: {invalid}",
+  "bulk.validation": "無効な行を修正してください。1回につき最大500リンクです。",
+  "bulk.import": ".txt を読み込む",
+  "bulk.fileTooLarge": "ファイルは2 MBを超えています。",
+  "bulk.preparing": "準備中 {current}/{total}…",
+  "bulk.finished": "処理済み: {count}。失敗: {failed}。",
 }
 
 export default ja

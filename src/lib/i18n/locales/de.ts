@@ -353,6 +353,15 @@ const de: Record<string, string> = {
   "update.openReleases": "Veröffentlichte Versionen anzeigen",
   "update.busy": "Ein Update läuft bereits.",
   "update.activeDownloads": "Warte, bis aktive Downloads abgeschlossen sind.",
+  "bulk.title": "Mehrere Links",
+  "bulk.help": "Ein Link pro Zeile oder eine Textdatei (.txt). Das gewählte Format, die Qualität und der Ordner werden verwendet.",
+  "bulk.placeholder": "https://www.youtube.com/watch?v=...\nhttps://...",
+  "bulk.count": "Gültig: {count} · Doppelt: {duplicates} · Ungültig: {invalid}",
+  "bulk.validation": "Ungültige Zeilen korrigieren. Maximal 500 Links pro Stapel.",
+  "bulk.import": ".txt importieren",
+  "bulk.fileTooLarge": "Die Datei überschreitet 2 MB.",
+  "bulk.preparing": "Vorbereitung {current}/{total}…",
+  "bulk.finished": "Verarbeitete Links: {count}. Fehler: {failed}.",
 }
 
 export default de

@@ -394,6 +394,15 @@ const en: Record<string, string> = {
   "update.openReleases": "View published releases",
   "update.busy": "An update is already in progress.",
   "update.activeDownloads": "Wait for active downloads to finish before updating.",
+  "bulk.title": "Multiple links",
+  "bulk.help": "Paste one link per line or import a text file (.txt). The selected format, quality and folder will be used.",
+  "bulk.placeholder": "https://www.youtube.com/watch?v=...\nhttps://...",
+  "bulk.count": "Valid: {count} · Repeated: {duplicates} · Invalid: {invalid}",
+  "bulk.validation": "Correct invalid lines and use at most 500 links per batch.",
+  "bulk.import": "Import .txt",
+  "bulk.fileTooLarge": "The file exceeds the 2 MB limit.",
+  "bulk.preparing": "Preparing {current}/{total}…",
+  "bulk.finished": "Links processed: {count}. Failed: {failed}.",
 }
 
 export default en

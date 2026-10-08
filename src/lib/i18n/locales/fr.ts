@@ -353,6 +353,15 @@ const fr: Record<string, string> = {
   "update.openReleases": "Voir les versions publiées",
   "update.busy": "Une mise à jour est déjà en cours.",
   "update.activeDownloads": "Attendez la fin des téléchargements actifs avant de mettre à jour.",
+  "bulk.title": "Plusieurs liens",
+  "bulk.help": "Collez un lien par ligne ou importez un fichier .txt. Le format, la qualité et le dossier sélectionnés seront utilisés.",
+  "bulk.placeholder": "https://www.youtube.com/watch?v=...\nhttps://...",
+  "bulk.count": "Valides : {count} · Doublons : {duplicates} · Invalides : {invalid}",
+  "bulk.validation": "Corrigez les lignes invalides. Maximum 500 liens par lot.",
+  "bulk.import": "Importer .txt",
+  "bulk.fileTooLarge": "Le fichier dépasse 2 Mo.",
+  "bulk.preparing": "Préparation {current}/{total}…",
+  "bulk.finished": "Liens traités : {count}. Échecs : {failed}.",
 }
 
 export default fr

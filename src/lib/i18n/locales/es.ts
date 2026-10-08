@@ -352,6 +352,15 @@ const es: typeof en = {
   "update.openReleases": "Ver versiones publicadas",
   "update.busy": "Ya hay una actualización en curso.",
   "update.activeDownloads": "Espera a que terminen las descargas activas antes de actualizar.",
+  "bulk.title": "Varios enlaces",
+  "bulk.help": "Pega un enlace por línea o importa un archivo de Bloc de notas (.txt). Se usarán el formato, la calidad y la carpeta elegidos.",
+  "bulk.placeholder": "https://www.youtube.com/watch?v=...\nhttps://...",
+  "bulk.count": "Válidos: {count} · Repetidos: {duplicates} · Inválidos: {invalid}",
+  "bulk.validation": "Corrige las líneas inválidas y usa un máximo de 500 enlaces por lote.",
+  "bulk.import": "Importar .txt",
+  "bulk.fileTooLarge": "El archivo supera el límite de 2 MB.",
+  "bulk.preparing": "Preparando {current}/{total}…",
+  "bulk.finished": "Enlaces procesados: {count}. Con errores: {failed}.",
 }
 
 export default es

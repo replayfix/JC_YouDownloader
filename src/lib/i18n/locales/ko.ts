@@ -353,6 +353,15 @@ const ko: Record<string, string> = {
   "update.openReleases": "배포 버전 보기",
   "update.busy": "업데이트가 이미 진행 중입니다.",
   "update.activeDownloads": "진행 중인 다운로드가 끝난 후 업데이트하세요.",
+  "bulk.title": "여러 링크",
+  "bulk.help": "한 줄에 링크 하나를 붙여넣거나 .txt 파일을 가져오세요. 선택한 형식, 품질 및 폴더를 사용합니다.",
+  "bulk.placeholder": "https://www.youtube.com/watch?v=...\nhttps://...",
+  "bulk.count": "유효: {count} · 중복: {duplicates} · 잘못됨: {invalid}",
+  "bulk.validation": "잘못된 줄을 수정하세요. 한 번에 최대 500개 링크입니다.",
+  "bulk.import": ".txt 가져오기",
+  "bulk.fileTooLarge": "파일이 2 MB 제한을 초과합니다.",
+  "bulk.preparing": "준비 중 {current}/{total}…",
+  "bulk.finished": "처리된 링크: {count}. 실패: {failed}.",
 }
 
 export default ko
