@@ -80,3 +80,15 @@ FFmpeg is licensed under the GNU General Public License v3. The exact GPL build 
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+## Portable para Windows
+
+Para generar el ejecutable con Node.js, Rust y Microsoft C++ Build Tools:
+
+```powershell
+npm ci --ignore-scripts
+npm run build:portable
+```
+
+El resultado es `portable/JC_YouDownloader.exe`. Copia la carpeta completa,
+con `portable.flag` y `binaries`. La configuración y el historial se guardan
+ en `Data`; las descargas se guardan por defecto en `Descargas`.

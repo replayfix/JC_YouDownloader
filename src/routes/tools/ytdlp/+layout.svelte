@@ -4,7 +4,6 @@
   import { invoke } from "@tauri-apps/api/core"
   import { listen } from "@tauri-apps/api/event"
   import { platform } from "@tauri-apps/plugin-os"
-  import { getVersion } from "@tauri-apps/api/app"
   import { page } from "$app/stores"
   import { onMount, onDestroy } from "svelte"
   import { openUrl } from "@tauri-apps/plugin-opener"
@@ -28,7 +27,6 @@
   let logsCopied = $state(false)
   let currentPlatform = $state<string>("macos")
   let copiedCmd = $state<string | null>(null)
-  let appVersion = $state("...")
 
   // Auto-install state
   let fullDepStatus = $state<FullDependencyStatus | null>(null)
@@ -293,7 +291,6 @@
       else currentPlatform = "macos"
     } catch { currentPlatform = "macos" }
 
-    try { appVersion = await getVersion() } catch { appVersion = "0.0.0" }
 
     // Check for updates in background
     checkForUpdate()
@@ -703,14 +700,13 @@
     <div data-tauri-drag-region class="h-8 shrink-0"></div>
 
     <!-- App Title/Logo -->
-    <div class="px-5 pb-6 pt-2">
+    <div class="px-3 pb-6 pt-2">
        <div class="flex items-center gap-3">
         <div class="w-8 h-8 rounded-lg bg-yt-primary flex items-center justify-center text-white shrink-0 shadow-lg shadow-yt-primary/30">
           <span class="material-symbols-outlined text-[20px]">download</span>
         </div>
-        <div>
-          <h1 class="font-display font-semibold text-sm text-yt-text tracking-tight">JC_YouDownloader</h1>
-          <p class="text-[10px] text-yt-text-secondary font-mono">v{appVersion}</p>
+        <div class="min-w-0 flex-1">
+          <h1 class="font-display font-semibold text-[13px] text-yt-text tracking-tight whitespace-nowrap">JC_YouDownloader</h1>
         </div>
        </div>
     </div>

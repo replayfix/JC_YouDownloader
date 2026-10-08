@@ -64,6 +64,7 @@ pub async fn reset_all_data(app: AppHandle) -> Result<Vec<String>, AppError> {
     let app_data_dir = app
         .path()
         .app_data_dir()
+        .map(crate::portable::data_dir)
         .map_err(|e| AppError::Custom(format!("Failed to get app data dir: {}", e)))?;
 
     // 1. Cancel all active downloads first
@@ -76,7 +77,7 @@ pub async fn reset_all_data(app: AppHandle) -> Result<Vec<String>, AppError> {
     }
 
     // 2. Clear settings store
-    match app.store("settings.json") {
+    match app.store(crate::portable::store_path("settings.json")) {
         Ok(store) => {
             store.clear();
             if let Err(e) = store.save() {

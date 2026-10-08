@@ -12,18 +12,19 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "fetch-binaries": "bun scripts/fetch-binaries.mjs",
     "tauri": "tauri",
-    "prepare": "husky"
+    "prepare": "husky",
+    "build:portable": "node scripts/fetch-binaries.mjs && tauri build --no-bundle --config src-tauri/tauri.portable.conf.json && node scripts/package-portable.mjs"
   },
   "license": "MIT",
   "dependencies": {
     "@tauri-apps/api": "~2.11.0",
-    "@tauri-apps/plugin-clipboard-manager": "^2.3.2",
-    "@tauri-apps/plugin-dialog": "^2.7.1",
-    "@tauri-apps/plugin-opener": "^2.5.4",
-    "@tauri-apps/plugin-os": "^2.3.2",
-    "@tauri-apps/plugin-process": "^2.3.1",
-    "@tauri-apps/plugin-store": "^2.4.3",
-    "@tauri-apps/plugin-updater": "^2.10.1",
+    "@tauri-apps/plugin-clipboard-manager": "2.3.2",
+    "@tauri-apps/plugin-dialog": "2.7.1",
+    "@tauri-apps/plugin-opener": "2.5.4",
+    "@tauri-apps/plugin-os": "2.3.2",
+    "@tauri-apps/plugin-process": "2.3.1",
+    "@tauri-apps/plugin-store": "2.4.3",
+    "@tauri-apps/plugin-updater": "2.10.1",
     "postcss": "^8.5.15"
   },
   "devDependencies": {

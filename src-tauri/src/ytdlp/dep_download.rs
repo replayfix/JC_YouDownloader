@@ -141,9 +141,13 @@ pub fn sweep_install_leftovers(app: &AppHandle) {
 
 /// Ensure the `app_data_dir/bin/` directory exists and return its path.
 pub fn ensure_bin_dir(app: &AppHandle) -> Result<PathBuf, AppError> {
-    let app_data = app.path().app_data_dir().map_err(|e| {
-        AppError::DependencyInstallError(format!("Failed to get app data dir: {}", e))
-    })?;
+    let app_data = app
+        .path()
+        .app_data_dir()
+        .map(crate::portable::data_dir)
+        .map_err(|e| {
+            AppError::DependencyInstallError(format!("Failed to get app data dir: {}", e))
+        })?;
     let bin_dir = app_data.join("bin");
     std::fs::create_dir_all(&bin_dir).map_err(|e| {
         AppError::DependencyInstallError(format!("Failed to create bin dir: {}", e))

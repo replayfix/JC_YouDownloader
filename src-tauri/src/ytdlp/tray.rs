@@ -13,7 +13,7 @@ const STORE_FILE: &str = "settings.json";
 /// it covers users who explicitly picked a non-English language (who would notice English here).
 fn tray_labels(app: &AppHandle) -> (&'static str, &'static str) {
     let lang = app
-        .store(STORE_FILE)
+        .store(crate::portable::store_path(STORE_FILE))
         .ok()
         .and_then(|s| s.get("language"))
         .and_then(|v| v.as_str().map(|s| s.to_string()))
@@ -98,13 +98,13 @@ pub fn setup_tray(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
 }
 
 pub fn get_minimize_to_tray_setting(app: &AppHandle) -> Option<bool> {
-    let store = app.store(STORE_FILE).ok()?;
+    let store = app.store(crate::portable::store_path(STORE_FILE)).ok()?;
     store.get("minimizeToTray").and_then(|v| v.as_bool())
 }
 
 pub fn set_minimize_to_tray_setting(app: &AppHandle, value: bool) -> Result<(), AppError> {
     let store = app
-        .store(STORE_FILE)
+        .store(crate::portable::store_path(STORE_FILE))
         .map_err(|e| AppError::Custom(e.to_string()))?;
     store.set(
         "minimizeToTray",

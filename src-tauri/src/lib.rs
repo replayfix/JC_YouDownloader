@@ -1,3 +1,4 @@
+pub mod portable;
 mod ytdlp;
 
 #[cfg(debug_assertions)]
@@ -118,6 +119,7 @@ pub fn run() {
             let app_data_dir = app
                 .path()
                 .app_data_dir()
+                .map(crate::portable::data_dir)
                 .expect("Failed to get app data directory");
 
             modules::logger::init(app_data_dir.clone());

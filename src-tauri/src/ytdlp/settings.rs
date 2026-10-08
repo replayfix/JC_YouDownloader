@@ -16,6 +16,7 @@ fn parse_settings(getter: impl Fn(&str) -> Option<serde_json::Value>) -> AppSett
 
     let download_path = getter("downloadPath")
         .and_then(|v| v.as_str().map(String::from))
+        .map(crate::portable::load_download_path)
         .unwrap_or_else(|| {
             let path = default_download_path();
             if path.is_empty() {
@@ -104,7 +105,7 @@ fn parse_settings(getter: impl Fn(&str) -> Option<serde_json::Value>) -> AppSett
 
 pub fn get_settings(app: &AppHandle) -> Result<AppSettings, AppError> {
     let store = app
-        .store(STORE_FILE)
+        .store(crate::portable::store_path(STORE_FILE))
         .map_err(|e| AppError::Custom(e.to_string()))?;
 
     Ok(parse_settings(|key| store.get(key)))
@@ -112,12 +113,12 @@ pub fn get_settings(app: &AppHandle) -> Result<AppSettings, AppError> {
 
 pub fn update_settings(app: &AppHandle, settings: &AppSettings) -> Result<(), AppError> {
     let store = app
-        .store(STORE_FILE)
+        .store(crate::portable::store_path(STORE_FILE))
         .map_err(|e| AppError::Custom(e.to_string()))?;
 
     store.set(
         "downloadPath",
-        serde_json::to_value(&settings.download_path)
+        serde_json::to_value(crate::portable::save_download_path(&settings.download_path))
             .map_err(|e| AppError::Custom(e.to_string()))?,
     );
 
@@ -216,7 +217,7 @@ pub fn update_settings(app: &AppHandle, settings: &AppSettings) -> Result<(), Ap
     store.save().map_err(|e| AppError::Custom(e.to_string()))?;
 
     // Refresh the last known-good backup now that a full snapshot was saved successfully.
-    if let Ok(app_data_dir) = app.path().app_data_dir() {
+    if let Ok(app_data_dir) = app.path().app_data_dir().map(crate::portable::data_dir) {
         backup_settings_file(&app_data_dir);
     }
 
@@ -304,6 +305,11 @@ fn backup_settings_file(app_data_dir: &std::path::Path) {
 }
 
 pub fn default_download_path() -> String {
+    if let Some(root) = crate::portable::root() {
+        let path = root.join("Descargas");
+        let _ = std::fs::create_dir_all(&path);
+        return path.to_string_lossy().into_owned();
+    }
     if cfg!(target_os = "windows") {
         if let Ok(profile) = std::env::var("USERPROFILE") {
             return format!(r"{}\Downloads", profile);

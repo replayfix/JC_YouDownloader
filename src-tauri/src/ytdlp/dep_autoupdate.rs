@@ -72,7 +72,7 @@ pub fn auto_update_bundled_deps(app: &AppHandle) {
 /// The `autoUpdateYtdlp` setting gates auto-update for all bundled binaries.
 /// Defaults to on when unset.
 fn enabled(app: &AppHandle) -> bool {
-    app.store("settings.json")
+    app.store(crate::portable::store_path("settings.json"))
         .ok()
         .and_then(|store| store.get("autoUpdateYtdlp"))
         .and_then(|v| v.as_bool())
@@ -81,7 +81,7 @@ fn enabled(app: &AppHandle) -> bool {
 
 fn throttled(app: &AppHandle) -> bool {
     let last = app
-        .store(STORE_FILE)
+        .store(crate::portable::store_path(STORE_FILE))
         .ok()
         .and_then(|store| store.get(THROTTLE_KEY))
         .and_then(|v| v.as_u64());
@@ -92,7 +92,7 @@ fn throttled(app: &AppHandle) -> bool {
 }
 
 fn record_check_time(app: &AppHandle) {
-    if let Ok(store) = app.store(STORE_FILE) {
+    if let Ok(store) = app.store(crate::portable::store_path(STORE_FILE)) {
         store.set(THROTTLE_KEY, serde_json::json!(now_secs()));
         let _ = store.save();
     }
@@ -101,7 +101,7 @@ fn record_check_time(app: &AppHandle) {
 /// Rewind the throttle stamp after a busy-skip so the next launch retries
 /// immediately instead of waiting out the full 24h window.
 fn clear_check_time(app: &AppHandle) {
-    if let Ok(store) = app.store(STORE_FILE) {
+    if let Ok(store) = app.store(crate::portable::store_path(STORE_FILE)) {
         store.delete(THROTTLE_KEY);
         let _ = store.save();
     }

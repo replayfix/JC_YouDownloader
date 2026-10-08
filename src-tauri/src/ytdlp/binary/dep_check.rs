@@ -257,7 +257,7 @@ const DEP_CACHE_STORE: &str = "dep-cache.json";
 
 /// Save dependency status to persistent store for instant load on next app launch.
 fn save_dep_status_to_store(app: &AppHandle, status: &FullDependencyStatus) {
-    if let Ok(store) = app.store(DEP_CACHE_STORE) {
+    if let Ok(store) = app.store(crate::portable::store_path(DEP_CACHE_STORE)) {
         if let Ok(val) = serde_json::to_value(status) {
             store.set("depStatus", val);
             let _ = store.save();
@@ -268,7 +268,9 @@ fn save_dep_status_to_store(app: &AppHandle, status: &FullDependencyStatus) {
 /// Load cached dependency status from persistent store.
 /// Returns the previously saved FullDependencyStatus if available.
 pub fn get_cached_dep_status(app: &AppHandle) -> Option<FullDependencyStatus> {
-    let store = app.store(DEP_CACHE_STORE).ok()?;
+    let store = app
+        .store(crate::portable::store_path(DEP_CACHE_STORE))
+        .ok()?;
     let val = store.get("depStatus")?;
     serde_json::from_value(val).ok()
 }

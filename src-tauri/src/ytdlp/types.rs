@@ -431,7 +431,12 @@ impl Default for AppSettings {
             language: None,
             theme: None,
             minimize_to_tray: None,
-            dep_mode: "hybrid".to_string(),
+            dep_mode: if crate::portable::root().is_some() {
+                "bundled"
+            } else {
+                "hybrid"
+            }
+            .to_string(),
             dep_overrides: std::collections::HashMap::new(),
             advanced: AdvancedOptions::default(),
             setup_completed: false,

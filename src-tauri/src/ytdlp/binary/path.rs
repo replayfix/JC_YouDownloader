@@ -98,11 +98,14 @@ pub(crate) enum DepMode {
 /// Defaults to `Hybrid`. Legacy `"external"` maps to `Bundled`; the removed
 /// `"system"` value falls through to `Hybrid`.
 pub(crate) fn dep_mode(app: &AppHandle) -> DepMode {
-    let raw = app.store("settings.json").ok().and_then(|store| {
-        store
-            .get("depMode")
-            .and_then(|v| v.as_str().map(String::from))
-    });
+    let raw = app
+        .store(crate::portable::store_path("settings.json"))
+        .ok()
+        .and_then(|store| {
+            store
+                .get("depMode")
+                .and_then(|v| v.as_str().map(String::from))
+        });
     match raw.as_deref() {
         Some("bundled") | Some("external") => DepMode::Bundled,
         _ => DepMode::Hybrid,
@@ -118,7 +121,9 @@ pub(crate) enum DepSourcePref {
 
 /// Read the per-dependency source override for `dep` (e.g. `"yt-dlp"`), if set.
 pub(crate) fn dep_override(app: &AppHandle, dep: &str) -> Option<DepSourcePref> {
-    let store = app.store("settings.json").ok()?;
+    let store = app
+        .store(crate::portable::store_path("settings.json"))
+        .ok()?;
     let overrides = store.get("depOverrides")?;
     match overrides.get(dep).and_then(|v| v.as_str())? {
         "appManaged" => Some(DepSourcePref::AppManaged),
@@ -144,7 +149,11 @@ pub(crate) fn source_order(app: &AppHandle, dep: &str) -> [DepSourcePref; 2] {
 
 /// Get the app-managed bin directory path.
 pub(super) fn app_bin_dir(app: &AppHandle) -> Option<PathBuf> {
-    app.path().app_data_dir().ok().map(|d| d.join("bin"))
+    app.path()
+        .app_data_dir()
+        .map(crate::portable::data_dir)
+        .ok()
+        .map(|d| d.join("bin"))
 }
 
 /// Build a PATH string that prepends the app bin dir to the augmented PATH.
