@@ -74,6 +74,35 @@ FFmpeg is licensed under the GNU General Public License v3. The exact GPL build 
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+## Probar desde Visual Studio Code
+
+Abre la carpeta del proyecto, abre una terminal y ejecuta:
+
+```powershell
+npm run desktop
+```
+
+La aplicación se abre en modo desarrollo y recarga la interfaz al guardar
+cambios. Usa un puerto disponible y cierra sus procesos al detenerlo con
+`Ctrl+C`. En PowerShell también puedes usar
+`npm.cmd run desktop`.
+
+El comando usa npm para iniciar la interfaz y busca Rust en la terminal o
+en la ubicación habitual de rustup. Si usas una instalación de Rust en otra
+carpeta, crea `.desktop.local.json` en la raíz del proyecto:
+
+```json
+{
+  "cargoHome": "D:/Herramientas/Rust/cargo",
+  "rustupHome": "D:/Herramientas/Rust/rustup"
+}
+```
+
+Sustituye esas rutas por las de tu equipo. Este archivo se excluye de Git.
+Al clonar el repositorio, instala las dependencias con
+`npm ci --ignore-scripts`. Windows también necesita Microsoft C++ Build Tools
+y WebView2 para ejecutar la aplicación de Tauri.
+
 ## Portable para Windows
 
 Para generar el ejecutable con Node.js, Rust y Microsoft C++ Build Tools:

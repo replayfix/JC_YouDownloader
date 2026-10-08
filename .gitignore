@@ -22,6 +22,7 @@ target/
 *.log
 
 # Local tool config
+.desktop.local.json
 .claude/
 .serena/
 .omc/
