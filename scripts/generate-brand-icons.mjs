@@ -25,9 +25,10 @@ const temporary = mkdtempSync(join(tmpdir(), "jc-brand-icons-"))
 try {
   const frames = spawnSync(process.execPath, [
     join(root, "node_modules/@tauri-apps/cli/tauri.js"), "icon", source,
-    "--output", temporary, ...sizes.flatMap(size => ["--png", String(size)]),
+    "--output", temporary, ...[...sizes, 1024].flatMap(size => ["--png", String(size)]),
   ], { cwd: root, stdio: "inherit" })
   if (frames.status !== 0) throw new Error("Could not render Windows icon frames")
+  cpSync(join(temporary, "1024x1024.png"), join(root, "static/AppIcon.png"))
   const images = sizes.map(size => readFileSync(join(temporary, size + "x" + size + ".png")))
   const header = Buffer.alloc(6 + sizes.length * 16)
   header.writeUInt16LE(1, 2)
@@ -47,6 +48,5 @@ try {
   if (resolve(dirname(temporary)) !== resolve(tmpdir())) throw new Error("Invalid temporary directory")
   rmSync(temporary, { recursive: true, force: true })
 }
-cpSync(join(root, "src-tauri/icons/icon.png"), join(root, "static/AppIcon.png"))
 cpSync(join(root, "src-tauri/icons/32x32.png"), join(root, "static/favicon.png"))
 console.log("Brand icons regenerated from brand-mark.svg")
