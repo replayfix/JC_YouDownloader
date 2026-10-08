@@ -2,7 +2,7 @@ import type en from "./en"
 
 const es: typeof en = {
   "nav.downloader": "Descargar",
-  "nav.queueHistory": "Cola e historial",
+  "nav.queueHistory": "Historial",
   "nav.settings": "Ajustes",
   "nav.logs": "Registros",
   "nav.queue": "Cola",
