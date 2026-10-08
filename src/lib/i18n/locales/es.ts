@@ -221,7 +221,7 @@ const es: typeof en = {
   "settings.minimizeToTrayDesc": "Minimiza a la bandeja del sistema al cerrar la ventana",
   "settings.autoUpdateDeps": "Actualizar dependencias automáticamente",
   "settings.autoUpdateDepsDesc": "Mantiene yt-dlp actualizado al iniciar, y FFmpeg y Deno cuando sea necesario. Desactívalo para actualizar desde Dependencias.",
-  "update.checkUpdate": "Buscar actualizaciones",
+  "update.checkUpdate": "Actualizar",
   "update.available": "Actualización disponible",
   "update.downloading": "Descargando actualización…",
   "update.install": "Actualizar y reiniciar",
