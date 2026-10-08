@@ -26,6 +26,7 @@ fn tray_labels(app: &AppHandle) -> (&'static str, &'static str) {
         "zh-TW" => ("顯示視窗", "結束"),
         "fr" => ("Afficher la fenêtre", "Quitter"),
         "de" => ("Fenster anzeigen", "Beenden"),
+        "es" => ("Mostrar ventana", "Salir"),
         _ => ("Show Window", "Quit"),
     }
 }

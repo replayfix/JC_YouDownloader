@@ -453,7 +453,7 @@
   }
 
   async function copyLogs() {
-    const text = recentLogs || ytdlpDebug || "No logs available"
+    const text = recentLogs || ytdlpDebug || t("logs.empty")
     await navigator.clipboard.writeText(text)
     logsCopied = true
     setTimeout(() => { logsCopied = false }, 2000)
@@ -1357,7 +1357,7 @@
         class="absolute inset-0 bg-black/50 backdrop-blur-sm border-none cursor-default w-full h-full"
         onclick={() => showDebug = false} 
         onkeydown={(e) => e.key === 'Escape' && (showDebug = false)}
-        aria-label="Close Debug Logs"
+        aria-label={t("debug.closeLogs")}
       ></button>
 
       <!-- Modal -->
@@ -1365,10 +1365,10 @@
         class="relative bg-yt-surface border border-yt-border rounded-xl shadow-2xl w-full max-w-3xl max-h-full flex flex-col overflow-hidden text-left" 
         role="dialog" 
         aria-modal="true" 
-        aria-label="Debug Logs"
+        aria-label={t("debug.logs")}
       >
          <div class="px-4 py-3 border-b border-yt-border flex items-center justify-between bg-yt-surface">
-            <h3 class="font-mono text-sm font-bold text-yt-text">Debug Logs</h3>
+            <h3 class="font-mono text-sm font-bold text-yt-text">{t("debug.logs")}</h3>
              <button onclick={copyLogs} class="text-xs font-medium text-yt-primary hover:underline">
                {logsCopied ? t("debug.copied") : t("debug.copyToClipboard")}
              </button>
@@ -1377,7 +1377,7 @@
             {#if recentLogs}
               <pre class="whitespace-pre-wrap">{recentLogs}</pre>
             {:else}
-              <div class="text-center py-10 opacity-50">No logs available</div>
+              <div class="text-center py-10 opacity-50">{t("logs.empty")}</div>
             {/if}
              {#if ytdlpDebug}
               <div class="mt-4 pt-4 border-t border-yt-border border-dashed">
@@ -1392,12 +1392,12 @@
 
   <!-- F9 Debug Command Menu -->
   {#if showDebugCmd}
-    <div class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Debug Commands">
+    <div class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={t("debug.commands")}>
       <div class="w-[480px] max-h-[80vh] bg-yt-surface rounded-xl shadow-2xl border border-yt-border flex flex-col animate-scale-in">
         <div class="px-5 py-4 border-b border-yt-border flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-xl text-yt-primary">terminal</span>
-            <h3 class="font-mono text-sm font-bold text-yt-text">Debug Commands</h3>
+            <h3 class="font-mono text-sm font-bold text-yt-text">{t("debug.commands")}</h3>
             <span class="text-[10px] font-mono bg-yt-highlight text-yt-text-secondary px-1.5 py-0.5 rounded">F9</span>
           </div>
           <button onclick={() => showDebugCmd = false} class="text-yt-text-secondary hover:text-yt-text transition-colors">
@@ -1409,14 +1409,14 @@
           <!-- Dependency Status -->
           <div class="space-y-1">
             <div class="flex items-center justify-between">
-              <h4 class="text-xs font-semibold text-yt-text-secondary uppercase tracking-wider">App-Managed Dependencies</h4>
+              <h4 class="text-xs font-semibold text-yt-text-secondary uppercase tracking-wider">{t("debug.appManagedDeps")}</h4>
               <button
                 onclick={debugRefreshStatus}
                 disabled={debugDepLoading}
                 class="text-xs text-yt-primary hover:underline disabled:opacity-50 flex items-center gap-1"
               >
                 <span class="material-symbols-outlined text-sm {debugDepLoading ? 'animate-spin' : ''}">refresh</span>
-                Refresh
+                {t("debug.refresh")}
               </button>
             </div>
           </div>
@@ -1439,7 +1439,7 @@
                     {/if}
                   </div>
                   <span class="text-[10px] font-mono px-1.5 py-0.5 rounded {dep.info.source === 'AppManaged' ? 'bg-blue-500/20 text-blue-400' : dep.info.source === 'SystemPath' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}">
-                    {dep.info.source}
+                    {dep.info.source === "AppManaged" ? t("settings.appManaged") : dep.info.source === "SystemPath" ? t("settings.systemPath") : t("settings.notInstalled")}
                   </span>
                 </div>
                 {#if dep.info.path}
@@ -1457,10 +1457,10 @@
                     {#if debugCmdResults[dep.key]?.status === "loading"}
                       <span class="flex items-center gap-1">
                         <span class="material-symbols-outlined text-sm animate-spin">progress_activity</span>
-                        Deleting...
+                        {t("debug.deleting")}
                       </span>
                     {:else}
-                      Delete Binary
+                      {t("debug.deleteBinary")}
                     {/if}
                   </button>
                   {#if debugCmdResults[dep.key]?.status === "success"}
@@ -1481,7 +1481,7 @@
             <div class="text-center py-6 text-yt-text-secondary text-sm">
               {#if debugDepLoading}
                 <span class="material-symbols-outlined text-2xl animate-spin mb-2">progress_activity</span>
-                <div>Loading status...</div>
+                <div>{t("debug.loadingStatus")}</div>
               {:else}
                 <span class="material-symbols-outlined text-2xl mb-2 opacity-50">info</span>
                 <div>{t("debug.clickRefresh")}</div>
@@ -1518,7 +1518,7 @@
                     onclick={() => resetConfirming = false}
                     class="flex-1 py-2 rounded-lg bg-yt-highlight hover:bg-yt-border text-yt-text text-xs font-medium transition-colors"
                   >
-                    Cancel
+                    {t("download.cancel")}
                   </button>
                   <button
                     onclick={handleFactoryReset}

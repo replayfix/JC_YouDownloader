@@ -31,6 +31,12 @@
   let totalPages = $derived(Math.ceil(totalCount / pageSize))
 
   const levels = ["ERROR", "WARN", "INFO", "DEBUG"]
+
+  function categoryLabel(category: string): string {
+    const key = `logs.category.${category}`
+    const label = t(key)
+    return label === key ? category : label
+  }
   const categories = ["app", "download", "metadata", "settings", "dependency"]
 
   onMount(async () => {
@@ -273,7 +279,7 @@
                 ? 'bg-yt-primary text-white'
                 : 'bg-yt-highlight text-yt-text-secondary hover:bg-yt-overlay'}"
           >
-            {level}
+            {t(`logs.level.${level}`)}
           </button>
         {/each}
       </div>
@@ -286,7 +292,7 @@
       >
         <option value="">{t("logs.allCategories")}</option>
         {#each categories as cat}
-          <option value={cat}>{cat}</option>
+          <option value={cat}>{categoryLabel(cat)}</option>
         {/each}
       </select>
 
@@ -323,10 +329,10 @@
             <span class="text-yt-text-muted shrink-0 w-[90px]">{formatTimestamp(entry.timestamp)}</span>
 
             <!-- Level -->
-            <span class="shrink-0 w-[52px] font-semibold {levelColor(entry.level)}">{entry.level.padEnd(5)}</span>
+            <span class="shrink-0 w-[85px] font-semibold {levelColor(entry.level)}">{t(`logs.level.${entry.level}`)}</span>
 
             <!-- Category -->
-            <span class="shrink-0 w-[90px] text-yt-text-secondary">[{entry.category}]</span>
+            <span class="shrink-0 w-[130px] text-yt-text-secondary">[{categoryLabel(entry.category)}]</span>
 
             <!-- Message -->
             <span class="text-yt-text break-all flex-1 min-w-0">{entry.message}</span>
@@ -340,7 +346,7 @@
   {#if !liveMode && totalPages > 1}
     <div class="px-6 py-3 border-t border-yt-border bg-yt-bg flex items-center justify-between">
       <p class="text-xs text-yt-text-secondary">
-        {totalCount} logs
+        {totalCount} {t("logs.title")}
       </p>
       <div class="flex items-center gap-1">
         <button

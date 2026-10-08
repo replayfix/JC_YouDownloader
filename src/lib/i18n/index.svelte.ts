@@ -1,5 +1,6 @@
 import { locale as getOsLocale } from "@tauri-apps/plugin-os"
 import en from "./locales/en"
+import es from "./locales/es"
 import ko from "./locales/ko"
 import ja from "./locales/ja"
 import zhCN from "./locales/zh-CN"
@@ -10,11 +11,12 @@ import de from "./locales/de"
 type Messages = Record<string, string>
 
 const locales: Record<string, Messages> = {
-  en, ko, ja, "zh-CN": zhCN, "zh-TW": zhTW, fr, de,
+  en, es, ko, ja, "zh-CN": zhCN, "zh-TW": zhTW, fr, de,
 }
 
 export const supportedLocales = [
   { code: "en", name: "English" },
+  { code: "es", name: "Español" },
   { code: "ko", name: "한국어" },
   { code: "ja", name: "日本語" },
   { code: "zh-CN", name: "简体中文" },
@@ -42,7 +44,7 @@ export function getLocale(): string {
 
 export function getDateLocale(): string {
   const map: Record<string, string> = {
-    en: "en-US", ko: "ko-KR", ja: "ja-JP",
+    en: "en-US", es: "es", ko: "ko-KR", ja: "ja-JP",
     "zh-CN": "zh-CN", "zh-TW": "zh-TW", fr: "fr-FR", de: "de-DE",
   }
   return map[currentLocale] || "en-US"

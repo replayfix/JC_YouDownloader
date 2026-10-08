@@ -353,6 +353,8 @@
 
   function templatePreview(): string {
     return makeTemplatePreview({
+      previewTitle: t("download.previewTitle"),
+      previewUploader: t("download.previewUploader"),
       useAdvancedTemplate,
       filenameTemplate,
       templateUploaderFolder,
@@ -1142,7 +1144,7 @@
                   <span class="text-xs text-yt-text font-medium px-1 w-20">{t("download.lossless")}</span>
                 {:else if isAudioFormat}
                   <select bind:value={audioQuality} class="bg-transparent border-none p-0 text-xs text-yt-text font-medium focus:ring-0 cursor-pointer w-20">
-                    <option value="0">Best</option>
+                    <option value="0">{t("download.best")}</option>
                     <option value="320K">320K</option>
                     <option value="256K">256K</option>
                     <option value="192K">192K</option>
@@ -1150,7 +1152,7 @@
                   </select>
                 {:else}
                   <select bind:value={quality} class="bg-transparent border-none p-0 text-xs text-yt-text font-medium focus:ring-0 cursor-pointer w-20">
-                    <option value="best">Best</option>
+                    <option value="best">{t("download.best")}</option>
                     <option value="1080p">1080p</option>
                     <option value="720p">720p</option>
                     <option value="480p">480p</option>

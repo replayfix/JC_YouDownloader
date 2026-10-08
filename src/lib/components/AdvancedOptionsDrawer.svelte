@@ -147,7 +147,7 @@
             {@render advLabel(t("download.advSbCategories"), t("download.advSbCategoriesHelp"))}
             <div class="flex flex-wrap gap-1.5">
               {#each SPONSORBLOCK_CATEGORIES as cat}
-                <button type="button" onclick={() => toggleSponsorblockCategory(cat)} class="px-2 py-0.5 rounded-full text-[11px] border transition-colors {advanced.sponsorblockCategories.includes(cat) ? 'bg-yt-primary/10 border-yt-primary/40 text-yt-primary' : 'border-yt-border text-yt-text-secondary hover:border-yt-primary/40'}">{cat}</button>
+                <button type="button" onclick={() => toggleSponsorblockCategory(cat)} class="px-2 py-0.5 rounded-full text-[11px] border transition-colors {advanced.sponsorblockCategories.includes(cat) ? 'bg-yt-primary/10 border-yt-primary/40 text-yt-primary' : 'border-yt-border text-yt-text-secondary hover:border-yt-primary/40'}">{t(`download.sponsor.${cat}`)}</button>
               {/each}
             </div>
           </div>

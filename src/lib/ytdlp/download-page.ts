@@ -72,13 +72,15 @@ export function getTemplatePreview(options: {
   templateUploaderFolder: boolean
   templateUploadDate: boolean
   templateVideoId: boolean
+  previewTitle?: string
+  previewUploader?: string
 }): string {
   if (options.useAdvancedTemplate) return options.filenameTemplate
-  let name = "Title"
+  let name = options.previewTitle ?? "Title"
   if (options.templateUploadDate) name = "20240101 " + name
   if (options.templateVideoId) name = name + " [dQw4w9WgXcQ]"
   let path = name + ".mp4"
-  if (options.templateUploaderFolder) path = "Uploader/" + path
+  if (options.templateUploaderFolder) path = (options.previewUploader ?? "Uploader") + "/" + path
   return path
 }
 
