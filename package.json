@@ -14,7 +14,8 @@
     "fetch-binaries": "bun scripts/fetch-binaries.mjs",
     "tauri": "tauri",
     "prepare": "husky",
-    "build:portable": "node scripts/fetch-binaries.mjs && tauri build --no-bundle --config src-tauri/tauri.portable.conf.json && node scripts/package-portable.mjs"
+    "build:portable": "node scripts/fetch-binaries.mjs && tauri build --no-bundle --config src-tauri/tauri.portable.conf.json && node scripts/package-portable.mjs",
+    "icons:generate": "node scripts/generate-brand-icons.mjs"
   },
   "license": "MIT",
   "dependencies": {

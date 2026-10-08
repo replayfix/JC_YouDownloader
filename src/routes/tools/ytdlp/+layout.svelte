@@ -1,4 +1,5 @@
 <script lang="ts">
+  import BrandLogo from "$lib/components/BrandLogo.svelte"
   import { commands } from "$lib/bindings"
   import type { DepInstallEvent, DownloadTaskInfo, FullDependencyStatus, GlobalDownloadEvent } from "$lib/bindings"
   import { invoke } from "@tauri-apps/api/core"
@@ -721,8 +722,8 @@
     <!-- App Title/Logo -->
     <div class="px-3 pb-6 pt-2">
        <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-yt-primary flex items-center justify-center text-white shrink-0 shadow-lg shadow-yt-primary/30">
-          <span class="material-symbols-outlined text-[20px]">download</span>
+        <div class="w-8 h-8 rounded-lg bg-yt-primary/10 flex items-center justify-center text-yt-primary shrink-0 transition-colors">
+          <BrandLogo />
         </div>
         <div class="min-w-0 flex-1">
           <h1 class="font-display font-semibold text-[13px] text-yt-text tracking-tight whitespace-nowrap">JC_YouDownloader</h1>
