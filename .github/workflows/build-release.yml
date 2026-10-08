@@ -57,7 +57,7 @@ jobs:
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
         run: |
           New-Item -ItemType Directory -Force -Path release-assets | Out-Null
-          $archive = "release-assets/JC_YouDownloader_$env:RELEASE_VERSION`_portable.zip"
+          $archive = "release-assets/YouDownloader_$env:RELEASE_VERSION`_portable.zip"
           Get-ChildItem -LiteralPath portable -Force | Compress-Archive -DestinationPath $archive -CompressionLevel Optimal
       - name: Firmar ZIP
         env:
@@ -66,12 +66,12 @@ jobs:
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
         run: |
           if (!$env:TAURI_SIGNING_PRIVATE_KEY -or !$env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD) { throw "Faltan los secretos de firma" }
-          node node_modules/@tauri-apps/cli/tauri.js signer sign --app-version $env:RELEASE_VERSION "release-assets/JC_YouDownloader_$env:RELEASE_VERSION`_portable.zip"
+          node node_modules/@tauri-apps/cli/tauri.js signer sign --app-version $env:RELEASE_VERSION "release-assets/YouDownloader_$env:RELEASE_VERSION`_portable.zip"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Generar latest.json
         env:
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
-        run: node scripts/create-update-manifest.mjs $env:RELEASE_VERSION "release-assets/JC_YouDownloader_$env:RELEASE_VERSION`_portable.zip" release-assets/latest.json
+        run: node scripts/create-update-manifest.mjs $env:RELEASE_VERSION "release-assets/YouDownloader_$env:RELEASE_VERSION`_portable.zip" release-assets/latest.json
       - name: Publicar versión estable
         uses: softprops/action-gh-release@v3
         with:
