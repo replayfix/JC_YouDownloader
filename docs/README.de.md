@@ -6,12 +6,6 @@ Gebaut mit Tauri 2.0 (Rust) und SvelteKit, bietet eine saubere und intuitive Ben
 
 [**English**](../README.md) | [**한국어**](README.ko.md) | [**日本語**](README.ja.md) | [**中文(简体)**](README.zh-CN.md) | [**中文(繁體)**](README.zh-TW.md) | [**Español**](README.es.md) | [**Français**](README.fr.md) | **Deutsch** | [**Português**](README.pt-BR.md) | [**Русский**](README.ru.md) | [**Tiếng Việt**](README.vi.md)
 
-## Video
-
-<p align="center">
-  <img src="Video.gif" alt="JC_YouDownloader Demo" width="700">
-</p>
-
 ## Funktionen
 
 - Video- und Playlist-Download mit Format- und Qualitätsauswahl
