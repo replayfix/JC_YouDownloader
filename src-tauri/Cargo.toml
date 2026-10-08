@@ -1,0 +1,77 @@
+[package]
+name = "jc-youdownloader"
+version = "0.1.0"
+description = "JC_YouDownloader - YouTube Video Downloader"
+authors = ["you"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# Tauri
+tauri = { version = "2.0", features = ["tray-icon"] }
+tauri-plugin-opener = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-store = "2"
+tauri-plugin-os = "2"
+tauri-plugin-updater = "2"
+tauri-plugin-process = "2"
+tauri-specta = { version = "2.0.0-rc.21", features = ["derive", "typescript"] }
+
+# async runtime
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync", "process", "io-util", "fs"] }
+
+# code generation
+specta = { version = "2.0.0-rc.22"}
+specta-typescript = "0.0.9"
+
+# json & http client
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+base64 = "0.22"
+once_cell = "1.21.3"
+chrono = "0.4"
+
+# yt-dlp GUI dependencies
+rusqlite = { version = "0.32", features = ["bundled"] }
+regex = "1"
+log = "0.4"
+
+# Dependency auto-download
+reqwest = { version = "0.12", features = ["stream", "json"] }
+zip = "2.1"
+flate2 = "1.0"
+tar = "0.4"
+xz2 = "0.1"
+sha2 = "0.10"
+hex = "0.4"
+futures-util = "0.3"
+urlencoding = "2"
+tauri-plugin-clipboard-manager = "2.3.2"
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+# Desktop-only: prevent a second app instance from clobbering the first one's queue DB
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-single-instance = "2"
+
+[profile.release]
+opt-level = "s"   # optimize for size; the app is I/O-bound, not CPU-bound
+lto = true        # cross-crate optimization shrinks the final binary
+codegen-units = 1 # better optimization (release builds are infrequent)
+strip = true      # strip symbols — Tauri's recommended bundle-size win
+# NOTE: deliberately NOT setting panic = "abort". The app relies on unwinding
+# for Mutex-poisoning recovery (db/mod.rs, download/manager.rs) and to isolate
+# per-task panics so one failed download/metadata fetch cannot crash the GUI.

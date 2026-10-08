@@ -1,0 +1,317 @@
+use super::dep_download::*;
+use super::types::DepInstallStage;
+use crate::modules::logger;
+use crate::modules::types::AppError;
+use tauri::AppHandle;
+
+/// Where to find the SHA-256 checksum for an ffmpeg archive.
+/// The two upstreams expose checksums differently:
+/// - vanloctech (macOS) ships a sibling `<asset>.sha256` (single-hash) file.
+/// - BtbN (Windows/Linux) ships one combined `checksums.sha256` manifest listing every asset.
+enum ChecksumSource {
+    /// Sibling file whose entire body is the hash for this one asset.
+    Sibling(&'static str),
+    /// Combined manifest URL plus the archive filename to look up inside it.
+    Manifest {
+        url: &'static str,
+        filename: &'static str,
+    },
+}
+
+struct DownloadInfo {
+    url: &'static str,
+    format: ArchiveFormat,
+    checksum: ChecksumSource,
+}
+
+/// Get ffmpeg download URL, archive format, and checksum source for the current platform.
+fn get_download_info() -> Result<DownloadInfo, AppError> {
+    if cfg!(target_os = "macos") {
+        if cfg!(target_arch = "aarch64") {
+            Ok(DownloadInfo {
+                url: "https://github.com/vanloctech/ffmpeg-macos/releases/latest/download/ffmpeg-macos-arm64.tar.gz",
+                format: ArchiveFormat::TarGz,
+                checksum: ChecksumSource::Sibling(
+                    "https://github.com/vanloctech/ffmpeg-macos/releases/latest/download/ffmpeg-macos-arm64.tar.gz.sha256",
+                ),
+            })
+        } else {
+            Ok(DownloadInfo {
+                url: "https://github.com/vanloctech/ffmpeg-macos/releases/latest/download/ffmpeg-macos-x64.tar.gz",
+                format: ArchiveFormat::TarGz,
+                checksum: ChecksumSource::Sibling(
+                    "https://github.com/vanloctech/ffmpeg-macos/releases/latest/download/ffmpeg-macos-x64.tar.gz.sha256",
+                ),
+            })
+        }
+    } else if cfg!(target_os = "windows") {
+        Ok(DownloadInfo {
+            url: "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip",
+            format: ArchiveFormat::Zip,
+            checksum: ChecksumSource::Manifest {
+                url: "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/checksums.sha256",
+                filename: "ffmpeg-master-latest-win64-gpl.zip",
+            },
+        })
+    } else {
+        // Linux
+        if cfg!(target_arch = "aarch64") {
+            Ok(DownloadInfo {
+                url: "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linuxarm64-gpl.tar.xz",
+                format: ArchiveFormat::TarXz,
+                checksum: ChecksumSource::Manifest {
+                    url: "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/checksums.sha256",
+                    filename: "ffmpeg-master-latest-linuxarm64-gpl.tar.xz",
+                },
+            })
+        } else {
+            Ok(DownloadInfo {
+                url: "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz",
+                format: ArchiveFormat::TarXz,
+                checksum: ChecksumSource::Manifest {
+                    url: "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/checksums.sha256",
+                    filename: "ffmpeg-master-latest-linux64-gpl.tar.xz",
+                },
+            })
+        }
+    }
+}
+
+enum ArchiveFormat {
+    Zip,
+    TarGz,
+    TarXz,
+}
+
+/// Verify a downloaded ffmpeg archive against its published checksum.
+///
+/// Availability-first, but fail-closed once we actually have a hash:
+/// - checksum file fetch fails (404, network, no matching entry) -> warn and continue (Ok);
+///   these "latest" rolling releases occasionally lag their checksum publication.
+/// - checksum fetched but the archive doesn't match -> Err (caller deletes the archive and aborts).
+async fn verify_ffmpeg_checksum(
+    archive_path: &std::path::Path,
+    source: &ChecksumSource,
+) -> Result<(), AppError> {
+    let expected = match source {
+        ChecksumSource::Sibling(url) => fetch_sha256sum(url).await.map(Some),
+        ChecksumSource::Manifest { url, filename } => fetch_checksum_for(url, filename).await,
+    };
+
+    match expected {
+        Ok(Some(hash)) => {
+            verify_sha256(archive_path, &hash).await?;
+            logger::info_cat("dependency", "ffmpeg checksum verified");
+            Ok(())
+        }
+        Ok(None) => {
+            logger::warn_cat(
+                "dependency",
+                "ffmpeg checksum manifest had no entry for this asset; proceeding without verification",
+            );
+            Ok(())
+        }
+        Err(e) => {
+            logger::warn_cat(
+                "dependency",
+                &format!(
+                    "ffmpeg checksum unavailable ({}); proceeding without verification",
+                    e
+                ),
+            );
+            Ok(())
+        }
+    }
+}
+
+/// Get ffmpeg/ffprobe binary names for the current platform.
+fn get_binary_names() -> &'static [&'static str] {
+    if cfg!(target_os = "windows") {
+        &["ffmpeg.exe", "ffprobe.exe"]
+    } else {
+        &["ffmpeg", "ffprobe"]
+    }
+}
+
+/// Install ffmpeg by downloading from GitHub.
+pub async fn install_ffmpeg(app: &AppHandle) -> Result<String, AppError> {
+    // Serialize against any concurrent ffmpeg install/update/delete so they don't
+    // corrupt the shared archive temp file or race the extracted binaries.
+    let _lock = lock_dependency("ffmpeg").await;
+    let bin_dir = ensure_bin_dir(app)?;
+    let info = get_download_info()?;
+    let binary_names = get_binary_names();
+
+    let temp_archive = format!(
+        "ffmpeg_archive.{}",
+        match info.format {
+            ArchiveFormat::Zip => "zip",
+            ArchiveFormat::TarGz => "tar.gz",
+            ArchiveFormat::TarXz => "tar.xz",
+        }
+    );
+
+    // Download
+    let archive_path = download_file(info.url, &bin_dir, &temp_archive, app, "ffmpeg").await?;
+
+    // Verify checksum before extracting. Mismatch is fatal (delete + abort); an unavailable
+    // checksum only warns so a rolling "latest" release that hasn't published one yet still works.
+    emit_stage(
+        app,
+        "ffmpeg",
+        DepInstallStage::Verifying,
+        Some("Verifying checksum..."),
+    );
+    if let Err(e) = verify_ffmpeg_checksum(&archive_path, &info.checksum).await {
+        let _ = tokio::fs::remove_file(&archive_path).await;
+        return Err(e);
+    }
+
+    // Extract into a staging directory, never directly over the live binaries:
+    // File::create would truncate a working ffmpeg first, so an interrupted
+    // extraction (crash, disk full) must land in a disposable location.
+    emit_stage(
+        app,
+        "ffmpeg",
+        DepInstallStage::Extracting,
+        Some("Extracting ffmpeg..."),
+    );
+
+    let staging = bin_dir.join("ffmpeg.staging");
+    let _ = std::fs::remove_dir_all(&staging);
+    if let Err(e) = std::fs::create_dir_all(&staging) {
+        let _ = tokio::fs::remove_file(&archive_path).await;
+        return Err(AppError::DependencyInstallError(format!(
+            "Failed to create staging dir: {}",
+            e
+        )));
+    }
+
+    let extract_result = match info.format {
+        ArchiveFormat::Zip => extract_zip(&archive_path, &staging, binary_names).await,
+        ArchiveFormat::TarGz => extract_tar_gz(&archive_path, &staging, binary_names).await,
+        ArchiveFormat::TarXz => extract_tar_xz(&archive_path, &staging, binary_names).await,
+    };
+    // The archive is no longer needed whether or not extraction worked.
+    let _ = tokio::fs::remove_file(&archive_path).await;
+    let extracted = match extract_result {
+        Ok(files) => files,
+        Err(e) => {
+            let _ = std::fs::remove_dir_all(&staging);
+            return Err(e);
+        }
+    };
+
+    let ffmpeg_bin = if cfg!(target_os = "windows") {
+        "ffmpeg.exe"
+    } else {
+        "ffmpeg"
+    };
+    let staged_ffmpeg = staging.join(ffmpeg_bin);
+    if !staged_ffmpeg.exists() {
+        let _ = std::fs::remove_dir_all(&staging);
+        return Err(AppError::DependencyInstallError(
+            "ffmpeg binary not found in archive".to_string(),
+        ));
+    }
+
+    // Executable bit + quarantine strip happen on the STAGED files, before the
+    // version probe (which needs to run them) and the swap.
+    for path in &extracted {
+        if let Err(e) = set_executable(path) {
+            let _ = std::fs::remove_dir_all(&staging);
+            return Err(e);
+        }
+        let _ = remove_quarantine(path);
+    }
+
+    // The archive checksum was verified above when one was available. A successful
+    // `-version` run of every staged binary is the final sanity gate (and the only
+    // integrity check when the checksum couldn't be fetched). Both ffmpeg and
+    // ffprobe must pass BEFORE anything is swapped in, so a half-working pair can
+    // never replace a fully working one.
+    emit_stage(
+        app,
+        "ffmpeg",
+        DepInstallStage::Verifying,
+        Some("Verifying installation..."),
+    );
+    let fail_verify = |e: AppError| {
+        let _ = std::fs::remove_dir_all(&staging);
+        emit_stage(app, "ffmpeg", DepInstallStage::Failed, Some(&e.to_string()));
+        e
+    };
+    let version = verify_staged_binary(&staged_ffmpeg, "-version")
+        .await
+        .map_err(&fail_verify)?;
+    for path in extracted.iter().filter(|p| **p != staged_ffmpeg) {
+        verify_staged_binary(path, "-version")
+            .await
+            .map_err(&fail_verify)?;
+    }
+
+    // Last-moment gate under the dependency lock: never swap binaries while a
+    // download could be mid-merge with the old ffmpeg.
+    if downloads_busy(app) {
+        let _ = std::fs::remove_dir_all(&staging);
+        return Err(downloads_busy_error());
+    }
+
+    // Swap all binaries back-to-back, only after every probe passed, keeping the
+    // window for a version-mismatched ffmpeg/ffprobe pair as small as possible.
+    // `std::fs::rename` replaces an existing destination (MOVEFILE_REPLACE_EXISTING
+    // on Windows); if the target is locked by a running process the rename fails
+    // and the old, working binary is left untouched.
+    for path in &extracted {
+        let Some(name) = path.file_name() else {
+            continue;
+        };
+        if let Err(e) = std::fs::rename(path, bin_dir.join(name)) {
+            let _ = std::fs::remove_dir_all(&staging);
+            return Err(AppError::DependencyInstallError(format!(
+                "Failed to install {}: {}",
+                name.to_string_lossy(),
+                e
+            )));
+        }
+    }
+    let _ = std::fs::remove_dir_all(&staging);
+
+    emit_stage(
+        app,
+        "ffmpeg",
+        DepInstallStage::Completing,
+        Some("ffmpeg installed"),
+    );
+
+    Ok(version)
+}
+
+/// Get the latest ffmpeg version info.
+pub async fn get_latest_version() -> Result<String, AppError> {
+    // BtbN builds use rolling "latest" tag, so we just return a placeholder.
+    // For vanloctech/ffmpeg-macos, check the latest release.
+    if cfg!(target_os = "macos") {
+        let resp = short_http_client()
+            .get("https://api.github.com/repos/vanloctech/ffmpeg-macos/releases/latest")
+            .header("User-Agent", "jc-youdownloader")
+            .send()
+            .await
+            .map_err(|e| {
+                AppError::NetworkError(format!("Failed to check ffmpeg version: {}", e))
+            })?;
+
+        let json = resp
+            .json::<serde_json::Value>()
+            .await
+            .map_err(|e| AppError::NetworkError(format!("Failed to parse response: {}", e)))?;
+
+        json["tag_name"]
+            .as_str()
+            .map(|s: &str| s.to_string())
+            .ok_or_else(|| AppError::NetworkError("No tag_name in response".to_string()))
+    } else {
+        // BtbN uses "latest" rolling release
+        Ok("latest".to_string())
+    }
+}
