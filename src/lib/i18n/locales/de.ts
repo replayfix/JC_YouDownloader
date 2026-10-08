@@ -1,6 +1,6 @@
 const de: Record<string, string> = {
   "nav.downloader": "Downloader",
-  "nav.queueHistory": "Warteschlange & Verlauf",
+  "nav.queueHistory": "Verlauf",
   "nav.settings": "Einstellungen",
   "nav.logs": "Protokoll",
   "nav.queue": "Warteschlange",

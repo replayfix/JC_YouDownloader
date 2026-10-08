@@ -1,6 +1,6 @@
 const ja: Record<string, string> = {
   "nav.downloader": "ダウンローダー",
-  "nav.queueHistory": "キューと履歴",
+  "nav.queueHistory": "履歴",
   "nav.settings": "設定",
   "nav.logs": "ログ",
   "nav.queue": "キュー",

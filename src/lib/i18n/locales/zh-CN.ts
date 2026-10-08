@@ -1,6 +1,6 @@
 const zhCN: Record<string, string> = {
   "nav.downloader": "下载器",
-  "nav.queueHistory": "队列与历史",
+  "nav.queueHistory": "历史",
   "nav.settings": "设置",
   "nav.logs": "日志",
   "nav.queue": "队列",

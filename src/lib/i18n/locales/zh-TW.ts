@@ -1,6 +1,6 @@
 const zhTW: Record<string, string> = {
   "nav.downloader": "下載器",
-  "nav.queueHistory": "佇列與歷史",
+  "nav.queueHistory": "歷史",
   "nav.settings": "設定",
   "nav.logs": "日誌",
   "nav.queue": "佇列",

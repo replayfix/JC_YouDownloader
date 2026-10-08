@@ -1,6 +1,6 @@
 const ko: Record<string, string> = {
   "nav.downloader": "다운로더",
-  "nav.queueHistory": "대기열 및 기록",
+  "nav.queueHistory": "기록",
   "nav.settings": "설정",
   "nav.logs": "로그",
   "nav.queue": "대기열",

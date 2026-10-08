@@ -1,7 +1,7 @@
 const en: Record<string, string> = {
   // Nav
   "nav.downloader": "Downloader",
-  "nav.queueHistory": "Queue & History",
+  "nav.queueHistory": "History",
   "nav.settings": "Settings",
   "nav.logs": "Logs",
   "nav.queue": "Queue",
