@@ -346,6 +346,13 @@ const ja: Record<string, string> = {
   "queue.errorDetails": "技術的な詳細",
   "error.retryNotAvailable": "ダウンロードの終了処理中か、状態が変わりました。少し待って再試行してください。",
   "error.ffmpegNotFound": "FFmpegが見つかりません。設定 → 依存関係からインストールしてください。",
+  "update.checking": "更新を確認中…",
+  "update.noRelease": "公開されたバージョンはまだありません。",
+  "update.checkFailed": "更新を確認できませんでした。接続を確認して再試行してください。",
+  "update.portableOnly": "自動更新は公開済みのWindowsポータブル版で利用できます。開発モードでは公開バージョンを確認できます。",
+  "update.openReleases": "公開バージョンを見る",
+  "update.busy": "更新がすでに進行中です。",
+  "update.activeDownloads": "進行中のダウンロードが終了するまで更新をお待ちください。",
 }
 
 export default ja

@@ -346,6 +346,13 @@ const zhCN: Record<string, string> = {
   "queue.errorDetails": "技术详情",
   "error.retryNotAvailable": "下载正在结束或状态已更改。请稍后重试。",
   "error.ffmpegNotFound": "未找到 FFmpeg。请前往设置 → 依赖项安装。",
+  "update.checking": "正在检查更新…",
+  "update.noRelease": "尚未发布任何版本。",
+  "update.checkFailed": "无法检查更新。请检查网络连接后重试。",
+  "update.portableOnly": "自动更新适用于已发布的 Windows 便携版。开发模式下可以查看可用版本。",
+  "update.openReleases": "查看已发布版本",
+  "update.busy": "更新已在进行中。",
+  "update.activeDownloads": "请等待当前下载完成后再更新。",
 }
 
 export default zhCN

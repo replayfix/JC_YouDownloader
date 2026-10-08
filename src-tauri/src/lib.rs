@@ -1,4 +1,5 @@
 pub mod portable;
+pub mod portable_updater;
 mod ytdlp;
 
 #[cfg(debug_assertions)]
@@ -23,6 +24,8 @@ pub type LogDbState = Arc<modules::log_db::LogDatabase>;
 pub fn run() {
     let builder = tauri_specta::Builder::<tauri::Wry>::new()
         .commands(collect_commands![
+            portable_updater::get_update_mode,
+            portable_updater::install_portable_update,
             ytdlp::commands::check_dependencies,
             ytdlp::commands::update_ytdlp,
             ytdlp::commands::get_download_queue,
@@ -114,7 +117,9 @@ pub fn run() {
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_process::init())
         .setup(move |app| {
-            // Register an updater only after this project's own service is configured.
+            #[cfg(desktop)]
+            app.handle()
+                .plugin(tauri_plugin_updater::Builder::new().build())?;
             builder.mount_events(app);
             let app_data_dir = app
                 .path()

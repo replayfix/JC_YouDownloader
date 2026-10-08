@@ -346,6 +346,13 @@ const zhTW: Record<string, string> = {
   "queue.errorDetails": "技術詳細資料",
   "error.retryNotAvailable": "下載正在結束或狀態已變更。請稍後重試。",
   "error.ffmpegNotFound": "找不到 FFmpeg。請前往設定 → 相依套件安裝。",
+  "update.checking": "正在檢查更新…",
+  "update.noRelease": "尚未發布任何版本。",
+  "update.checkFailed": "無法檢查更新。請檢查網路連線後重試。",
+  "update.portableOnly": "自動更新適用於已發布的 Windows 可攜版。開發模式下可以查看可用版本。",
+  "update.openReleases": "查看已發布版本",
+  "update.busy": "更新已在進行中。",
+  "update.activeDownloads": "請等待目前的下載完成後再更新。",
 }
 
 export default zhTW

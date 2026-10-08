@@ -345,6 +345,13 @@ const es: typeof en = {
   "queue.errorDetails": "Detalles técnicos",
   "error.retryNotAvailable": "La descarga está terminando o ya cambió de estado. Espera un momento y vuelve a intentarlo.",
   "error.ffmpegNotFound": "No se encontró FFmpeg. Instálalo desde Ajustes → Dependencias.",
+  "update.checking": "Buscando actualizaciones…",
+  "update.noRelease": "Todavía no hay versiones publicadas.",
+  "update.checkFailed": "No se pudieron consultar las actualizaciones. Comprueba tu conexión e inténtalo de nuevo.",
+  "update.portableOnly": "La actualización automática se aplica desde el portable publicado de Windows. En modo desarrollo puedes consultar las versiones disponibles.",
+  "update.openReleases": "Ver versiones publicadas",
+  "update.busy": "Ya hay una actualización en curso.",
+  "update.activeDownloads": "Espera a que terminen las descargas activas antes de actualizar.",
 }
 
 export default es

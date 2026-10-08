@@ -60,8 +60,8 @@ The production build output will be in `src-tauri/target/release/bundle/`.
 
 JC_YouDownloader is based on [Yummy-Yt-Dlp by shlifedev](https://github.com/shlifedev/Yummy-Yt-Dlp).
 The application name, package name (`jc-youdownloader`), and identifier
-(`com.jc.youdownloader`) belong to this adaptation. The app updater is disabled
-until a repository and update service are configured for this project.
+(`com.jc.youdownloader`) belong to this adaptation. Windows portable updates
+use signed ZIP files published in this repository's GitHub Releases.
 
 This app bundles or downloads the following open-source binaries:
 
@@ -115,3 +115,36 @@ npm run build:portable
 El resultado es `portable/JC_YouDownloader.exe`. Copia la carpeta completa,
 con `portable.flag` y `binaries`. La configuración y el historial se guardan
  en `Data`; las descargas se guardan por defecto en `Descargas`.
+
+## Actualizaciones del portable
+
+El portable de Windows consulta:
+
+```text
+https://github.com/replayfix/JC_YouDownloader/releases/latest/download/latest.json
+```
+
+El botón «Buscar actualizaciones» descarga un ZIP cuya firma se verifica antes
+de aplicarlo. Después de cerrar la aplicación, reemplaza el ejecutable y las
+herramientas incluidas, y vuelve a abrir el programa. Conserva `Data`,
+`Descargas` y las demás carpetas del usuario. Los archivos reemplazados se
+guardan en `.updates` para recuperar la versión anterior si falla el reemplazo.
+Las descargas activas deben terminar antes de actualizar.
+
+En modo desarrollo se pueden consultar las versiones, pero la actualización
+se aplica desde el portable publicado. Hasta la primera publicación, el
+programa mostrará que todavía no hay versiones disponibles.
+
+Para publicar una versión: GitHub → Actions → **Publicar portable Windows** →
+**Run workflow**. Puedes indicar una versión mayor o dejarla vacía para
+incrementar el último parche. La acción prueba, compila, comprime y firma el
+portable, y publica el ZIP, su firma y `latest.json`. Los cambios de código
+por sí solos no publican una versión.
+
+Los secretos `TAURI_SIGNING_PRIVATE_KEY` y
+`TAURI_SIGNING_PRIVATE_KEY_PASSWORD` están configurados en GitHub Actions.
+La copia local de la clave y su contraseña está en `.updater-keys`, excluida
+de Git. Conserva una copia segura de esa carpeta para futuras publicaciones.
+Las versiones antiguas que no incluyen este actualizador necesitan descargar
+manualmente el primer portable con esta función; las siguientes se actualizan
+desde la aplicación.

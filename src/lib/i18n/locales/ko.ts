@@ -346,6 +346,13 @@ const ko: Record<string, string> = {
   "queue.errorDetails": "기술 정보",
   "error.retryNotAvailable": "다운로드가 종료 중이거나 상태가 변경되었습니다. 잠시 기다린 후 다시 시도하세요.",
   "error.ffmpegNotFound": "FFmpeg를 찾을 수 없습니다. 설정 → 의존성에서 설치하세요.",
+  "update.checking": "업데이트 확인 중…",
+  "update.noRelease": "아직 배포된 버전이 없습니다.",
+  "update.checkFailed": "업데이트를 확인할 수 없습니다. 연결을 확인하고 다시 시도하세요.",
+  "update.portableOnly": "자동 업데이트는 배포된 Windows 포터블 버전에서 사용할 수 있습니다. 개발 모드에서는 배포 버전을 확인할 수 있습니다.",
+  "update.openReleases": "배포 버전 보기",
+  "update.busy": "업데이트가 이미 진행 중입니다.",
+  "update.activeDownloads": "진행 중인 다운로드가 끝난 후 업데이트하세요.",
 }
 
 export default ko

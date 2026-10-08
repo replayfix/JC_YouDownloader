@@ -346,6 +346,13 @@ const fr: Record<string, string> = {
   "queue.errorDetails": "Détails techniques",
   "error.retryNotAvailable": "Le téléchargement se termine ou son état a changé. Patientez et réessayez.",
   "error.ffmpegNotFound": "FFmpeg est introuvable. Installez-le dans Paramètres → Dépendances.",
+  "update.checking": "Recherche de mises à jour…",
+  "update.noRelease": "Aucune version publiée pour le moment.",
+  "update.checkFailed": "Impossible de vérifier les mises à jour. Vérifiez votre connexion et réessayez.",
+  "update.portableOnly": "Les mises à jour automatiques concernent la version portable Windows publiée. En mode développement, vous pouvez consulter les versions disponibles.",
+  "update.openReleases": "Voir les versions publiées",
+  "update.busy": "Une mise à jour est déjà en cours.",
+  "update.activeDownloads": "Attendez la fin des téléchargements actifs avant de mettre à jour.",
 }
 
 export default fr

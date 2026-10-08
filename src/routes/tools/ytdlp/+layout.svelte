@@ -71,6 +71,9 @@
   let updateDownloaded = $state(0)
   let updateReady = $state(false)
   let updateError = $state<string | null>(null)
+  let updateChecking = $state(false)
+  let updateCheckError = $state<string | null>(null)
+  let updateMode = $state("development")
 
   // Welcome (first-run) state
   type DepMode = "hybrid" | "bundled"
@@ -583,38 +586,52 @@
   }
 
   async function checkForUpdate() {
+    if (updateChecking || updateDownloading) return
+    updateChecking = true
+    updateCheckError = null
+    updateAvailable = false
+    updateInfo = null
     try {
+      updateMode = await commands.getUpdateMode()
       const update = await check()
       if (update) {
         updateAvailable = true
         updateInfo = update
       }
     } catch {
-      // Silently fail in dev mode or when updater is not configured
+      try {
+        const response = await fetch("https://api.github.com/repos/replayfix/JC_YouDownloader/releases/latest")
+        updateCheckError = response.status === 404 ? "update.noRelease" : "update.checkFailed"
+      } catch { updateCheckError = "update.checkFailed" }
+    } finally {
+      updateChecking = false
     }
   }
 
+  function openUpdateDialog() {
+    updateError = null
+    showUpdateDialog = true
+    checkForUpdate()
+  }
+
   async function handleUpdate() {
-    if (!updateInfo) return
+    if (!updateInfo || updateMode !== "portable") return
     updateDownloading = true
     updateDownloaded = 0
     updateTotalSize = 0
     updateProgress = 0
     updateReady = false
     updateError = null
+    let stopProgress: (() => void) | null = null
     try {
-      await updateInfo.downloadAndInstall((progress) => {
-        if (progress.event === "Started" && progress.data.contentLength) {
-          updateTotalSize = progress.data.contentLength
-        } else if (progress.event === "Progress") {
-          updateDownloaded += progress.data.chunkLength
-          if (updateTotalSize > 0) {
-            updateProgress = Math.round((updateDownloaded / updateTotalSize) * 100)
-          }
-        } else if (progress.event === "Finished") {
-          updateReady = true
-        }
+      stopProgress = await listen<{ downloaded: number; total: number | null; ready: boolean }>("portable-update-progress", ({ payload }) => {
+        updateDownloaded = payload.downloaded
+        updateTotalSize = payload.total ?? 0
+        updateProgress = updateTotalSize ? Math.round(updateDownloaded / updateTotalSize * 100) : 0
+        updateReady = payload.ready
       })
+      const result = await commands.installPortableUpdate()
+      if (result.status === "error") throw new Error(extractError(result.error))
       updateReady = true
       updateProgress = 100
     } catch (e) {
@@ -624,6 +641,7 @@
       updateProgress = 0
       updateDownloaded = 0
     } finally {
+      stopProgress?.()
       updateDownloading = false
       // The dialog may have been hidden during the download; never restart (or fail)
       // silently in the background — re-surface it and let the user choose.
@@ -745,7 +763,7 @@
     <!-- Update Button -->
     <div class="px-3 mb-1">
       <button
-        onclick={() => { updateError = null; showUpdateDialog = true }}
+        onclick={openUpdateDialog}
         class="flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm font-medium text-yt-text-secondary hover:bg-yt-overlay hover:text-yt-text w-full"
       >
         <span class="material-symbols-outlined text-[20px]">system_update</span>
@@ -1182,7 +1200,17 @@
           </div>
         </div>
 
-        {#if updateAvailable && updateInfo}
+        {#if updateChecking}
+          <p class="text-sm text-yt-text-secondary mb-4">{t("update.checking")}</p>
+        {:else if updateCheckError}
+          <p class="text-sm text-yt-text-secondary mb-4">{t(updateCheckError)}</p>
+          <button class="px-4 py-2 rounded-lg bg-yt-highlight text-sm" onclick={() => checkForUpdate()}>{t("queue.retry")}</button>
+          <button class="ml-2 px-4 py-2 rounded-lg bg-yt-highlight text-sm" onclick={() => showUpdateDialog = false}>{t("download.close")}</button>
+        {:else if updateAvailable && updateInfo}
+          {#if updateMode !== "portable"}
+            <p class="text-sm text-yt-text-secondary mb-4">{t("update.portableOnly")}</p>
+            <button class="mb-3 text-sm text-yt-primary hover:underline" onclick={() => openUrl("https://github.com/replayfix/JC_YouDownloader/releases/latest")}>{t("update.openReleases")}</button>
+          {/if}
           {#if updateInfo.body}
             <div class="mb-4">
               <p class="text-xs font-semibold text-yt-text-secondary uppercase tracking-wider mb-2">{t("update.releaseNotes")}</p>
@@ -1259,7 +1287,8 @@
               </button>
               <button
                 onclick={handleUpdate}
-                class="flex-1 px-4 py-2 rounded-lg bg-yt-primary hover:bg-yt-primary-hover text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                disabled={updateMode !== "portable"}
+                class="flex-1 px-4 py-2 rounded-lg bg-yt-primary hover:bg-yt-primary-hover text-white text-sm font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <span class="material-symbols-outlined text-[18px]">download</span>
                 {t("update.install")}

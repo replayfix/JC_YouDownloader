@@ -5,6 +5,17 @@
 
 
 export const commands = {
+async getUpdateMode() : Promise<string> {
+    return await TAURI_INVOKE("get_update_mode");
+},
+async installPortableUpdate() : Promise<Result<null, AppError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("install_portable_update") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async checkDependencies() : Promise<Result<DependencyStatus, AppError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("check_dependencies") };

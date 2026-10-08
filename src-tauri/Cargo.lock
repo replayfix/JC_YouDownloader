@@ -2214,6 +2214,7 @@ dependencies = [
  "hex",
  "libc",
  "log",
+ "minisign-verify",
  "once_cell",
  "regex",
  "reqwest 0.12.28",

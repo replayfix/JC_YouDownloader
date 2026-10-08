@@ -387,6 +387,13 @@ const en: Record<string, string> = {
   "queue.errorDetails": "Technical details",
   "error.retryNotAvailable": "The download is finishing or its status has changed. Wait a moment and try again.",
   "error.ffmpegNotFound": "FFmpeg was not found. Install it from Settings → Dependencies.",
+  "update.checking": "Checking for updates…",
+  "update.noRelease": "No releases have been published yet.",
+  "update.checkFailed": "Could not check for updates. Check your connection and try again.",
+  "update.portableOnly": "Automatic updates apply to the published Windows portable. In development mode you can check available releases.",
+  "update.openReleases": "View published releases",
+  "update.busy": "An update is already in progress.",
+  "update.activeDownloads": "Wait for active downloads to finish before updating.",
 }
 
 export default en

@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -13,4 +13,6 @@ mkdirSync(dest, { recursive: true });
 cpSync(exe, join(dest, "JC_YouDownloader.exe"));
 cpSync(join(root, "src-tauri", "binaries"), join(dest, "binaries"), { recursive: true });
 writeFileSync(join(dest, "portable.flag"), "");
+const config = JSON.parse(readFileSync(join(root, "src-tauri", "tauri.conf.json"), "utf8"));
+writeFileSync(join(dest, ".portable-version.json"), JSON.stringify({ version: config.version }));
 console.log(`Portable folder: ${dest}`);

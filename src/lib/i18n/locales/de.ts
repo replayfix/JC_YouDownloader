@@ -346,6 +346,13 @@ const de: Record<string, string> = {
   "queue.errorDetails": "Technische Details",
   "error.retryNotAvailable": "Der Download wird beendet oder sein Status hat sich geändert. Warte kurz und versuche es erneut.",
   "error.ffmpegNotFound": "FFmpeg wurde nicht gefunden. Installiere es unter Einstellungen → Abhängigkeiten.",
+  "update.checking": "Suche nach Updates…",
+  "update.noRelease": "Es wurden noch keine Versionen veröffentlicht.",
+  "update.checkFailed": "Updates konnten nicht geprüft werden. Prüfe deine Verbindung und versuche es erneut.",
+  "update.portableOnly": "Automatische Updates gelten für die veröffentlichte portable Windows-Version. Im Entwicklungsmodus kannst du verfügbare Versionen prüfen.",
+  "update.openReleases": "Veröffentlichte Versionen anzeigen",
+  "update.busy": "Ein Update läuft bereits.",
+  "update.activeDownloads": "Warte, bis aktive Downloads abgeschlossen sind.",
 }
 
 export default de

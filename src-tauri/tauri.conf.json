@@ -25,7 +25,14 @@
       "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' asset: https://asset.localhost https: data:; connect-src ipc: http://ipc.localhost https://api.github.com https://github.com"
     }
   },
-  "plugins": {},
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDM2QzRFQzNFNjU2NkIzODMKUldTRHMyWmxQdXpFTmpTVVFxdnVYU2x0K2Fzb0NEM2xDQkVGbjlpS0tyMUdFdlUwV2xSZ1hzYkIK",
+      "endpoints": [
+        "https://github.com/replayfix/JC_YouDownloader/releases/latest/download/latest.json"
+      ]
+    }
+  },
   "bundle": {
     "active": true,
     "createUpdaterArtifacts": false,

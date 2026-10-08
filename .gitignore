@@ -23,6 +23,7 @@ target/
 
 # Local tool config
 .desktop.local.json
+.updater-keys/
 .claude/
 .serena/
 .omc/
