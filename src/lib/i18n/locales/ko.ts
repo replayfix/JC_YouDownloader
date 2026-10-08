@@ -37,7 +37,7 @@ const ko: Record<string, string> = {
   "layout.switchToAppManagedDesc": "앱이 자동으로 의존성을 다운로드하고 관리하도록 전환합니다.",
 
   // Welcome (first-run)
-  "welcome.title": "JC_YouDownloader에 오신 것을 환영합니다",
+  "welcome.title": "YouDownloader에 오신 것을 환영합니다",
   "welcome.subtitle": "의존성(yt-dlp, ffmpeg, deno) 관리 방식을 선택하세요",
   "welcome.appManagedTag": "권장",
   "welcome.hybrid": "하이브리드",

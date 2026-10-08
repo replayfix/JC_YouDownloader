@@ -39,7 +39,7 @@ const en: Record<string, string> = {
   "layout.switchToAppManagedDesc": "Let the app download and manage dependencies automatically instead.",
 
   // Welcome (first-run)
-  "welcome.title": "Welcome to JC_YouDownloader",
+  "welcome.title": "Welcome to YouDownloader",
   "welcome.subtitle": "Choose how to manage dependencies (yt-dlp, ffmpeg, deno)",
   "welcome.appManagedTag": "Recommended",
   "welcome.hybrid": "Hybrid",

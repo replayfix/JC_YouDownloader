@@ -18,7 +18,9 @@ const result = spawnSync(process.execPath, [
 if (result.status !== 0) process.exit(result.status ?? 1)
 // Include exact taskbar sizes for 100%, 125%, 150%, and 200% scaling.
 // Each ICO frame is rendered directly from SVG, avoiding bitmap resampling.
-const sizes = [16, 20, 24, 32, 40, 48, 64, 96, 128, 256]
+// Tauri decodes the FIRST ICO frame for the running window. Keep the largest
+// first; a 16px first frame gets upscaled and blurs the title/taskbar icon.
+const sizes = [256, 128, 96, 64, 48, 40, 32, 24, 20, 16]
 const temporary = mkdtempSync(join(tmpdir(), "jc-brand-icons-"))
 try {
   const frames = spawnSync(process.execPath, [

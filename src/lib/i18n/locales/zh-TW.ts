@@ -37,7 +37,7 @@ const zhTW: Record<string, string> = {
   "layout.switchToAppManagedDesc": "讓應用程式自動下載和管理依賴項。",
 
   // Welcome (first-run)
-  "welcome.title": "歡迎使用 JC_YouDownloader",
+  "welcome.title": "歡迎使用 YouDownloader",
   "welcome.subtitle": "選擇如何管理依賴項（yt-dlp、ffmpeg、deno）",
   "welcome.appManagedTag": "推薦",
   "welcome.hybrid": "混合",

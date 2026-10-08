@@ -37,7 +37,7 @@ const de: Record<string, string> = {
   "layout.switchToAppManagedDesc": "Lassen Sie die App Abhängigkeiten automatisch herunterladen und verwalten.",
 
   // Welcome (first-run)
-  "welcome.title": "Willkommen bei JC_YouDownloader",
+  "welcome.title": "Willkommen bei YouDownloader",
   "welcome.subtitle": "Wählen Sie, wie Abhängigkeiten (yt-dlp, ffmpeg, deno) verwaltet werden sollen",
   "welcome.appManagedTag": "Empfohlen",
   "welcome.hybrid": "Hybrid",

@@ -37,7 +37,7 @@ const zhCN: Record<string, string> = {
   "layout.switchToAppManagedDesc": "让应用自动下载和管理依赖项。",
 
   // Welcome (first-run)
-  "welcome.title": "欢迎使用 JC_YouDownloader",
+  "welcome.title": "欢迎使用 YouDownloader",
   "welcome.subtitle": "选择如何管理依赖项（yt-dlp、ffmpeg、deno）",
   "welcome.appManagedTag": "推荐",
   "welcome.hybrid": "混合",

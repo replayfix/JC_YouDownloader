@@ -37,7 +37,7 @@ const ja: Record<string, string> = {
   "layout.switchToAppManagedDesc": "アプリが自動的に依存関係をダウンロード・管理するモードに切り替えます。",
 
   // Welcome (first-run)
-  "welcome.title": "JC_YouDownloaderへようこそ",
+  "welcome.title": "YouDownloaderへようこそ",
   "welcome.subtitle": "依存関係（yt-dlp、ffmpeg、deno）の管理方法を選択してください",
   "welcome.appManagedTag": "推奨",
   "welcome.hybrid": "ハイブリッド",

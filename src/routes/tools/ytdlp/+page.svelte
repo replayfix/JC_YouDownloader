@@ -1187,8 +1187,10 @@
 
       <!-- Multiple links and text-file import -->
       <div class="mt-3">
-        <button type="button" class="text-sm text-yt-primary hover:underline" onclick={() => bulkExpanded = !bulkExpanded} disabled={bulkBusy} aria-expanded={bulkExpanded}>
+        <button type="button" class="inline-flex items-center gap-2 rounded-lg border border-yt-border bg-yt-surface px-3 py-2 text-sm font-medium text-yt-text hover:bg-yt-highlight transition-colors disabled:opacity-50" onclick={() => bulkExpanded = !bulkExpanded} disabled={bulkBusy} aria-expanded={bulkExpanded}>
+          <span class="material-symbols-outlined text-[18px]">playlist_add</span>
           {t("bulk.title")}
+          <span class="material-symbols-outlined text-[18px]">{bulkExpanded ? "expand_less" : "expand_more"}</span>
         </button>
         {#if bulkExpanded}
           <div class="mt-2 rounded-lg border border-yt-border bg-yt-surface/30 p-3 space-y-3">

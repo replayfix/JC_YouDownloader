@@ -36,7 +36,7 @@ const es: typeof en = {
   "layout.systemPathMissingDesc": "Instala las herramientas necesarias con el gestor de paquetes del sistema y vuelve a comprobar.",
   "layout.switchToAppManaged": "Usar herramientas de la aplicación",
   "layout.switchToAppManagedDesc": "Permite que la aplicación descargue y administre las dependencias automáticamente.",
-  "welcome.title": "Bienvenido a JC_YouDownloader",
+  "welcome.title": "Bienvenido a YouDownloader",
   "welcome.subtitle": "Elige cómo administrar las dependencias: yt-dlp, FFmpeg y Deno",
   "welcome.appManagedTag": "Recomendado",
   "welcome.hybrid": "Híbrido",

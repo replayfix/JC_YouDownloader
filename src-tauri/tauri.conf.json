@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "JC_YouDownloader",
+  "productName": "YouDownloader",
   "version": "1.1.5",
   "identifier": "com.jc.youdownloader",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "JC_YouDownloader",
+        "title": "YouDownloader",
         "width": 900,
         "height": 600,
         "minWidth": 640,
