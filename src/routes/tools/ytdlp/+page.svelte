@@ -47,6 +47,7 @@
   let bulkProgress = $state(0)
   let bulkFileInput = $state<HTMLInputElement | null>(null)
   let bulkFailures = $state<{ url: string; message: string }[]>([])
+  let bulkPreview = $state<(PlaylistDownloadEntry & { selected: boolean })[]>([])
   const bulkParsed = $derived(parseBulkLinks(bulkText))
 
   async function importBulkFile(event: Event) {
@@ -69,7 +70,7 @@
     } catch (err) { error = errorMessage(err); errorKey = null }
   }
 
-  async function downloadBulkLinks() {
+  async function prepareBulkLinks() {
     if (bulkBusy || downloadingAll || preparingDownload || downloading || analyzing || scanning) return
     const parsed = parseBulkLinks(bulkText)
     if (!parsed.urls.length || parsed.urls.length > 500 || parsed.invalid.length) return
@@ -93,16 +94,45 @@
         bulkProgress++
       }
       if (bulkCancelled) return
-      if (entries.length && !(await enqueueBatchDownloads(entries, t("bulk.title")))) return
-      // Preserve unsuccessful links for retry instead of silently discarding them.
+      bulkPreview = entries.map(entry => ({ ...entry, selected: true }))
       bulkText = bulkFailures.map(failure => failure.url).join("\n")
-      notice = [notice, t("bulk.finished", { count: entries.length, failed: bulkFailures.length })].filter(Boolean).join(" ")
+      notice = t("bulk.previewReady", { count: entries.length, failed: bulkFailures.length })
     } catch (err) { error = errorMessage(err); errorKey = null }
     finally {
       bulkBusy = false
       downloadingAll = false
       batchProgress = { current: 0, total: 0 }
     }
+  }
+
+  async function downloadBulkLinks() {
+    const entries = bulkPreview.filter(entry => entry.selected)
+    if (!entries.length || bulkBusy || downloadingAll) return
+    bulkBusy = true
+    downloadingAll = true
+    try {
+      let queued = true
+      for (let index = 0; index < entries.length; index += 20) {
+        if (bulkCancelled) { queued = false; break }
+        const chunk = entries.slice(index, index + 20)
+        batchProgress = { current: index, total: entries.length }
+        if (!(await enqueueBatchDownloads(chunk, t("bulk.title")))) { queued = false; break }
+      }
+      if (queued) {
+        bulkPreview = []
+        notice = t("bulk.finished", { count: entries.length, failed: bulkFailures.length })
+      }
+    } finally {
+      bulkBusy = false
+      downloadingAll = false
+      batchProgress = { current: 0, total: 0 }
+    }
+  }
+
+  function retryBulkFailures() {
+    bulkText = bulkFailures.map(failure => failure.url).join("\n")
+    bulkPreview = []
+    bulkFailures = []
   }
 
   // URL & analyze state
@@ -346,6 +376,7 @@
         downloadPath = result.data.downloadPath
         cookieBrowser = result.data.cookieBrowser
         maxConcurrent = result.data.maxConcurrent
+        quality = result.data.defaultQuality || "best"
         useAdvancedTemplate = result.data.useAdvancedTemplate
         filenameTemplate = result.data.filenameTemplate
         templateUploaderFolder = result.data.templateUploaderFolder
@@ -1204,7 +1235,7 @@
             <div class="flex flex-wrap gap-2">
               <button type="button" onclick={pasteBulkLinks} disabled={bulkBusy} class="px-3 py-2 text-xs rounded-md border border-yt-border hover:bg-yt-highlight disabled:opacity-50">{t("download.pasteFromClipboard")}</button>
               <button type="button" onclick={() => bulkFileInput?.click()} disabled={bulkBusy} class="px-3 py-2 text-xs rounded-md border border-yt-border hover:bg-yt-highlight disabled:opacity-50">{t("bulk.import")}</button>
-              <button type="button" onclick={downloadBulkLinks} disabled={bulkBusy || downloadingAll || preparingDownload || downloading || analyzing || scanning || !bulkParsed.urls.length || bulkParsed.invalid.length > 0 || bulkParsed.urls.length > 500} class="px-4 py-2 text-xs rounded-md bg-yt-primary hover:bg-yt-primary-hover text-white disabled:opacity-50">{t("download.download")} ({bulkParsed.urls.length})</button>
+              <button type="button" onclick={prepareBulkLinks} disabled={bulkBusy || downloadingAll || preparingDownload || downloading || analyzing || scanning || !bulkParsed.urls.length || bulkParsed.invalid.length > 0 || bulkParsed.urls.length > 500} class="px-4 py-2 text-xs rounded-md bg-yt-primary hover:bg-yt-primary-hover text-white disabled:opacity-50">{t("bulk.prepare")} ({bulkParsed.urls.length})</button>
               {#if bulkBusy}
                 <span class="self-center text-xs text-yt-text-secondary">{t("bulk.preparing", { current: bulkProgress, total: bulkParsed.urls.length })}</span>
                 <button type="button" onclick={() => bulkCancelled = true} disabled={bulkCancelled} class="px-3 py-2 text-xs rounded-md border border-yt-border disabled:opacity-50">{t("download.cancel")}</button>
@@ -1214,6 +1245,23 @@
               <ul class="text-xs text-yt-error space-y-1 max-h-32 overflow-auto">
                 {#each bulkFailures as failure}<li class="break-all">{failure.url}: {failure.message}</li>{/each}
               </ul>
+              <button type="button" onclick={retryBulkFailures} class="text-xs text-yt-primary hover:underline">{t("bulk.retryFailed")}</button>
+            {/if}
+            {#if bulkPreview.length}
+              <div class="rounded-md border border-yt-border bg-yt-bg divide-y divide-yt-border max-h-56 overflow-auto">
+                {#each bulkPreview as entry (entry.videoId)}
+                  <label class="flex items-center gap-2 p-2 text-xs hover:bg-yt-highlight/40 cursor-pointer">
+                    <input type="checkbox" bind:checked={entry.selected} class="accent-yt-primary" />
+                    <span class="truncate text-yt-text flex-1">{entry.title || entry.url}</span>
+                    <span class="text-yt-text-muted truncate max-w-[35%]">{entry.videoId}</span>
+                  </label>
+                {/each}
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick={downloadBulkLinks} disabled={bulkBusy || !bulkPreview.some(entry => entry.selected)} class="px-4 py-2 text-xs rounded-md bg-yt-primary hover:bg-yt-primary-hover text-white disabled:opacity-50">{t("download.downloadSelected")} ({bulkPreview.filter(entry => entry.selected).length})</button>
+                <button type="button" onclick={() => bulkPreview = bulkPreview.map(entry => ({ ...entry, selected: true }))} class="text-xs text-yt-primary hover:underline">{t("bulk.selectAll")}</button>
+                <button type="button" onclick={() => bulkPreview = bulkPreview.map(entry => ({ ...entry, selected: false }))} class="text-xs text-yt-primary hover:underline">{t("bulk.clearSelection")}</button>
+              </div>
             {/if}
           </div>
         {/if}
@@ -1258,7 +1306,7 @@
                     <option value="128K">128K</option>
                   </select>
                 {:else}
-                  <select bind:value={quality} class="bg-transparent border-none p-0 text-xs text-yt-text font-medium focus:ring-0 cursor-pointer w-20">
+                  <select bind:value={quality} onchange={() => autoSaveSettings({ defaultQuality: quality })} class="bg-transparent border-none p-0 text-xs text-yt-text font-medium focus:ring-0 cursor-pointer w-20">
                     <option value="best">{t("download.best")}</option>
                     <option value="1080p">1080p</option>
                     <option value="720p">720p</option>

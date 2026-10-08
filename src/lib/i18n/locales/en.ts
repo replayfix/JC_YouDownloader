@@ -403,6 +403,11 @@ const en: Record<string, string> = {
   "bulk.fileTooLarge": "The file exceeds the 2 MB limit.",
   "bulk.preparing": "Preparing {current}/{total}…",
   "bulk.finished": "Links processed: {count}. Failed: {failed}.",
+  "bulk.prepare": "Prepare preview",
+  "bulk.previewReady": "Preview ready: {count} links. Failed: {failed}.",
+  "bulk.selectAll": "Select all",
+  "bulk.clearSelection": "Clear selection",
+  "bulk.retryFailed": "Retry failed links",
 }
 
 export default en

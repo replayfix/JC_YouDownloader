@@ -361,6 +361,11 @@ const es: typeof en = {
   "bulk.fileTooLarge": "El archivo supera el límite de 2 MB.",
   "bulk.preparing": "Preparando {current}/{total}…",
   "bulk.finished": "Enlaces procesados: {count}. Con errores: {failed}.",
+  "bulk.prepare": "Preparar vista previa",
+  "bulk.previewReady": "Vista previa lista: {count} enlaces. Con errores: {failed}.",
+  "bulk.selectAll": "Seleccionar todo",
+  "bulk.clearSelection": "Quitar selección",
+  "bulk.retryFailed": "Reintentar enlaces fallidos",
 }
 
 export default es
