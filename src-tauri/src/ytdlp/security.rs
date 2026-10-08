@@ -607,9 +607,10 @@ mod tests {
 
     #[test]
     fn test_valid_paths() {
-        assert!(sanitize_output_path("/Users/test/Downloads").is_ok());
         if cfg!(target_os = "windows") {
-            // Windows absolute paths - tested on Windows only
+            assert!(sanitize_output_path(r"C:\Users\test\Downloads").is_ok());
+        } else {
+            assert!(sanitize_output_path("/Users/test/Downloads").is_ok());
         }
     }
 

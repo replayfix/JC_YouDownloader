@@ -7,6 +7,7 @@
 </script>
 
 <script lang="ts">
+  import { page } from "$app/stores"
   import { commands, type AppSettings, type DownloadRequest, type PlaylistScanEvent, type DuplicateCheckResult, type QuickMetadata, type AdvancedOptions, type VideoInfo } from "$lib/bindings"
   import {
     defaultAdvancedOptions,
@@ -64,6 +65,11 @@
     cookieSelectEl?.scrollIntoView({ behavior: "smooth", block: "center" })
     cookieSelectEl?.focus()
   }
+  $effect(() => {
+    if ($page.url.searchParams.get("configure") === "cookies" && cookieSelectEl) {
+      focusCookiePicker()
+    }
+  })
   let playlistResult = $state<PlaylistView | null>(null)
   // Streaming playlist scan state. The scan id is generated client-side (monotonic counter)
   // and set BEFORE invoking startPlaylistScan, so the first "entries" event can never beat

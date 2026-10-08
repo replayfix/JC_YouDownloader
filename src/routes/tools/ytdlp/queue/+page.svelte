@@ -1,5 +1,7 @@
 <script lang="ts">
   import { commands } from "$lib/bindings"
+  import { goto } from "$app/navigation"
+  import type { RecoveryAction } from "$lib/ytdlp/download-feedback"
   import type { DownloadTaskInfo, GlobalDownloadEvent, HistoryEntry, HistoryItem } from "$lib/bindings"
   import { ask } from "@tauri-apps/plugin-dialog"
   import { listen } from "@tauri-apps/api/event"
@@ -246,10 +248,10 @@
     })
   }
 
-  async function handleRetry(id: number) {
+  async function handleRetry(id: number, outputDir: string | null = null) {
     await withBusy(`retry:${id}`, async () => {
       try {
-        const r = await commands.retryDownload(id)
+        const r = await commands.retryDownload(id, outputDir)
         if (r.status === "ok") await loadActive()
         else {
           console.error("Failed to retry:", r.error)
@@ -258,6 +260,32 @@
       } catch (e) {
         console.error("Failed to retry:", e)
         actionError = errorMessage(e)
+      }
+    })
+  }
+
+  async function handleRecovery(id: number, action: RecoveryAction) {
+    await withBusy(`retry:${id}`, async () => {
+      try {
+        if (action === "cookies") {
+          await goto("/tools/ytdlp?configure=cookies")
+          return
+        }
+        if (action === "dependencies") {
+          await goto("/tools/ytdlp/settings/dependencies")
+          return
+        }
+        const selection = await commands.selectDownloadDirectory()
+        if (selection.status === "error") {
+          actionError = extractError(selection.error)
+          return
+        }
+        if (!selection.data) return
+        const result = await commands.retryDownload(id, selection.data)
+        if (result.status === "error") actionError = extractError(result.error)
+        else await loadActive()
+      } catch (error) {
+        actionError = extractError(error)
       }
     })
   }
@@ -490,6 +518,7 @@
                       onCancel={() => handleCancel(item.id)}
                       onRetry={() => handleRetry(item.id)}
                       onToggleError={() => toggleError(item.id)}
+                      onRecover={(action) => handleRecovery(item.id, action)}
                     />
                   {/each}
                 </div>
@@ -503,6 +532,7 @@
                 onCancel={() => handleCancel(row.item.id)}
                 onRetry={() => handleRetry(row.item.id)}
                 onToggleError={() => toggleError(row.item.id)}
+                onRecover={(action) => handleRecovery(row.item.id, action)}
               />
             {/if}
           {/each}

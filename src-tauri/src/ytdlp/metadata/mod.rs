@@ -14,7 +14,7 @@ pub use validation::*;
 /// Map yt-dlp stderr output to a stable i18n key. The frontend translates the key into the
 /// user's current UI language (see `extractError` + `src/lib/i18n/locales`). The raw stderr is
 /// logged by the caller, so messages stay clean and fully localized for every language.
-fn map_stderr_error(stderr: &str) -> AppError {
+pub(crate) fn map_stderr_error(stderr: &str) -> AppError {
     // Match specific age-restriction phrases only, and BEFORE any "Sign in" handling: the real
     // YouTube age gate is "Sign in to confirm your age. This video may be inappropriate for
     // some users." A bare "age" substring also matches the very common "Unable to download
@@ -76,6 +76,22 @@ fn map_stderr_error(stderr: &str) -> AppError {
         return AppError::MetadataError("error.botCheck".to_string());
     }
 
+    let lower = stderr.to_lowercase();
+    if [
+        "connection timed out",
+        "temporary failure in name resolution",
+        "failed to resolve",
+        "network is unreachable",
+        "connection reset",
+        "could not resolve",
+        "unable to connect",
+        "name or service not known",
+    ]
+    .iter()
+    .any(|message| lower.contains(message))
+    {
+        return AppError::NetworkError("error.networkError".to_string());
+    }
     AppError::MetadataError("error.ytdlpGeneric".to_string())
 }
 

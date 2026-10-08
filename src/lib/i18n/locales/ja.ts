@@ -338,6 +338,14 @@ const ja: Record<string, string> = {
   "update.restartNow": "今すぐ再起動",
   "update.restartManually": "アップデートはインストールされましたが、自動再起動に失敗しました。手動でアプリを再起動してください。",
   "update.hide": "非表示",
+  "download.remainingTime": "推定残り時間：",
+  "download.calculatingTime": "残り時間を計算中…",
+  "queue.changeDirectory": "フォルダーを変更して再試行",
+  "queue.reviewDependencies": "依存関係を確認",
+  "queue.fixThenRetry": "設定を変更した後、このダウンロードを再試行してください。",
+  "queue.errorDetails": "技術的な詳細",
+  "error.retryNotAvailable": "ダウンロードの終了処理中か、状態が変わりました。少し待って再試行してください。",
+  "error.ffmpegNotFound": "FFmpegが見つかりません。設定 → 依存関係からインストールしてください。",
 }
 
 export default ja

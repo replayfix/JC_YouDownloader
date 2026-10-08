@@ -338,6 +338,14 @@ const zhTW: Record<string, string> = {
   "update.restartNow": "立即重新啟動",
   "update.restartManually": "更新已安裝，但自動重新啟動失敗。請手動重新啟動應用程式。",
   "update.hide": "隱藏",
+  "download.remainingTime": "預估剩餘時間：",
+  "download.calculatingTime": "正在計算時間…",
+  "queue.changeDirectory": "變更資料夾並重試",
+  "queue.reviewDependencies": "檢查相依套件",
+  "queue.fixThenRetry": "調整設定後，請重試此下載。",
+  "queue.errorDetails": "技術詳細資料",
+  "error.retryNotAvailable": "下載正在結束或狀態已變更。請稍後重試。",
+  "error.ffmpegNotFound": "找不到 FFmpeg。請前往設定 → 相依套件安裝。",
 }
 
 export default zhTW

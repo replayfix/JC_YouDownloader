@@ -338,6 +338,14 @@ const fr: Record<string, string> = {
   "update.restartNow": "Redémarrer maintenant",
   "update.restartManually": "La mise à jour a été installée, mais le redémarrage automatique a échoué. Veuillez redémarrer l'application manuellement.",
   "update.hide": "Masquer",
+  "download.remainingTime": "Temps restant estimé :",
+  "download.calculatingTime": "Calcul du temps…",
+  "queue.changeDirectory": "Changer de dossier et réessayer",
+  "queue.reviewDependencies": "Vérifier les dépendances",
+  "queue.fixThenRetry": "Après avoir modifié les paramètres, réessayez ce téléchargement.",
+  "queue.errorDetails": "Détails techniques",
+  "error.retryNotAvailable": "Le téléchargement se termine ou son état a changé. Patientez et réessayez.",
+  "error.ffmpegNotFound": "FFmpeg est introuvable. Installez-le dans Paramètres → Dépendances.",
 }
 
 export default fr

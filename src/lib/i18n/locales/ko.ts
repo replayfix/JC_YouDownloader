@@ -338,6 +338,14 @@ const ko: Record<string, string> = {
   "update.restartNow": "지금 재시작",
   "update.restartManually": "업데이트는 설치되었지만 자동 재시작에 실패했습니다. 앱을 직접 재시작해 주세요.",
   "update.hide": "숨기기",
+  "download.remainingTime": "예상 남은 시간:",
+  "download.calculatingTime": "남은 시간 계산 중…",
+  "queue.changeDirectory": "폴더 변경 후 재시도",
+  "queue.reviewDependencies": "의존성 확인",
+  "queue.fixThenRetry": "설정을 변경한 후 다운로드를 다시 시도하세요.",
+  "queue.errorDetails": "기술 정보",
+  "error.retryNotAvailable": "다운로드가 종료 중이거나 상태가 변경되었습니다. 잠시 기다린 후 다시 시도하세요.",
+  "error.ffmpegNotFound": "FFmpeg를 찾을 수 없습니다. 설정 → 의존성에서 설치하세요.",
 }
 
 export default ko

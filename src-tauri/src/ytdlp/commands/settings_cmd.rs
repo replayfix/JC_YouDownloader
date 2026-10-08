@@ -99,6 +99,7 @@ fn folder_dialog_title(app: &AppHandle) -> &'static str {
         "zh-TW" => "選擇下載資料夾",
         "fr" => "Choisir le dossier de téléchargement",
         "de" => "Download-Ordner auswählen",
+        "es" => "Seleccionar carpeta de descarga",
         _ => "Select Download Folder",
     }
 }

@@ -277,11 +277,17 @@ impl Database {
         Ok(rows > 0)
     }
 
-    /// Atomically claim a specific task for retry by flipping it to 'downloading' only if it is
-    /// currently in a retryable terminal/pending state. Returns true if this call claimed it.
-    /// Using a single conditional UPDATE prevents a concurrent process_next_pending from
-    /// double-dispatching the same task (which would spawn two yt-dlp processes / duplicate
-    /// history rows).
+    /// Update a failed task's destination without changing other queue entries or defaults.
+    pub fn change_retry_output_path(&self, id: u64, output_path: &str) -> Result<bool, AppError> {
+        let conn = self.conn();
+        let rows = conn.execute(
+            "UPDATE downloads SET output_path = ?2 WHERE id = ?1 AND status IN ('failed', 'cancelled')",
+            params![id, output_path],
+        ).map_err(|e| AppError::DatabaseError(e.to_string()))?;
+        Ok(rows > 0)
+    }
+
+    /// Atomically claim a retry without dispatching the same task twice.
     pub fn claim_for_retry(&self, id: u64) -> Result<bool, AppError> {
         let conn = self.conn();
         let rows = conn
@@ -533,6 +539,26 @@ mod tests {
         )
         .unwrap();
         conn.last_insert_rowid()
+    }
+
+    #[test]
+    fn retry_destination_changes_only_selected_failed_task() {
+        let db = Database::new_in_memory().unwrap();
+        let failed = insert_row(&db, "failed", 0) as u64;
+        let other = insert_row(&db, "failed", 0) as u64;
+        assert!(db
+            .change_retry_output_path(failed, "C:/new/%(title)s.%(ext)s")
+            .unwrap());
+        assert_eq!(
+            db.get_download(failed).unwrap().unwrap().output_path,
+            "C:/new/%(title)s.%(ext)s"
+        );
+        assert_eq!(db.get_download(other).unwrap().unwrap().output_path, "/tmp");
+        for status in ["downloading", "pending", "completed"] {
+            let id = insert_row(&db, status, 0) as u64;
+            assert!(!db.change_retry_output_path(id, "C:/new").unwrap());
+            assert_eq!(db.get_download(id).unwrap().unwrap().output_path, "/tmp");
+        }
     }
 
     #[test]

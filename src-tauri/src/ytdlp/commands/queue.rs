@@ -29,13 +29,33 @@ pub async fn clear_completed(app: AppHandle) -> Result<u32, AppError> {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn retry_download(app: AppHandle, task_id: u64) -> Result<(), AppError> {
+pub async fn retry_download(
+    app: AppHandle,
+    task_id: u64,
+    output_dir: Option<String>,
+) -> Result<(), AppError> {
     let db = app.state::<crate::DbState>();
     // Ensure the task exists (reuse the existing row rather than creating a duplicate).
     db.get_download(task_id)?
         .ok_or_else(|| AppError::Custom("Download task not found".to_string()))?;
 
     let manager = app.state::<Arc<DownloadManager>>();
+
+    if let Some(output_dir) = output_dir {
+        crate::ytdlp::security::sanitize_output_path(&output_dir)?;
+        if manager.is_executing(task_id) {
+            return Err(AppError::Custom("error.retryNotAvailable".to_string()));
+        }
+        let settings = crate::ytdlp::settings::get_settings(&app)?;
+        crate::ytdlp::security::sanitize_filename_template(&settings.filename_template)?;
+        let output_path = std::path::Path::new(&output_dir)
+            .join(&settings.filename_template)
+            .to_string_lossy()
+            .into_owned();
+        if !db.change_retry_output_path(task_id, &output_path)? {
+            return Err(AppError::Custom("error.retryNotAvailable".to_string()));
+        }
+    }
 
     // An executor for this task is still in flight — typically winding down after a cancel
     // (the kill + stream draining run for seconds after the row already reads 'cancelled').

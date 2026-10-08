@@ -338,6 +338,14 @@ const zhCN: Record<string, string> = {
   "update.restartNow": "立即重启",
   "update.restartManually": "更新已安装，但自动重启失败。请手动重启应用。",
   "update.hide": "隐藏",
+  "download.remainingTime": "预计剩余时间：",
+  "download.calculatingTime": "正在计算时间…",
+  "queue.changeDirectory": "更改文件夹并重试",
+  "queue.reviewDependencies": "检查依赖项",
+  "queue.fixThenRetry": "调整设置后，请重试此下载。",
+  "queue.errorDetails": "技术详情",
+  "error.retryNotAvailable": "下载正在结束或状态已更改。请稍后重试。",
+  "error.ffmpegNotFound": "未找到 FFmpeg。请前往设置 → 依赖项安装。",
 }
 
 export default zhCN

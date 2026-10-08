@@ -266,8 +266,24 @@ pub(super) fn classify_download_error(code: Option<i32>, stderr_output: &str) ->
         1 => {
             if is_cookie_error {
                 "error.cookieAccess".to_string()
+            } else if stderr_output.lines().any(|line| {
+                let lower = line.to_lowercase();
+                lower.contains("ffmpeg")
+                    && (lower.contains("not found") || lower.contains("not installed"))
+            }) {
+                "error.ffmpegNotFound".to_string()
             } else {
-                "error.downloadFailed".to_string()
+                use crate::modules::types::AppError;
+                match crate::ytdlp::metadata::map_stderr_error(stderr_output) {
+                    AppError::MetadataError(key)
+                    | AppError::NetworkError(key)
+                    | AppError::InvalidUrl(key)
+                        if key != "error.ytdlpGeneric" =>
+                    {
+                        key
+                    }
+                    _ => "error.downloadFailed".to_string(),
+                }
             }
         }
         // yt-dlp reserves exit code 2 for invalid user-provided options (optparse), e.g. an
@@ -1213,6 +1229,22 @@ pub(super) fn process_next_pending(app: AppHandle) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn download_feedback_preserves_actionable_error_keys() {
+        for (stderr, expected) in [
+            ("ERROR: Sign in to confirm your age", "error.ageRestricted"),
+            (
+                "ERROR: Sign in to confirm you're not a bot",
+                "error.botCheck",
+            ),
+            ("ERROR: ffmpeg not found", "error.ffmpegNotFound"),
+            ("ERROR: connection timed out", "error.networkError"),
+            ("ERROR: unexpected failure", "error.downloadFailed"),
+        ] {
+            assert_eq!(classify_download_error(Some(1), stderr), expected);
+        }
+    }
 
     #[test]
     fn append_limited_keeps_recent_tail() {

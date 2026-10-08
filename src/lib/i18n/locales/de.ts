@@ -338,6 +338,14 @@ const de: Record<string, string> = {
   "update.restartNow": "Jetzt neu starten",
   "update.restartManually": "Das Update wurde installiert, aber der automatische Neustart ist fehlgeschlagen. Bitte starte die App manuell neu.",
   "update.hide": "Ausblenden",
+  "download.remainingTime": "Geschätzte Restzeit:",
+  "download.calculatingTime": "Zeit wird berechnet…",
+  "queue.changeDirectory": "Ordner ändern und erneut versuchen",
+  "queue.reviewDependencies": "Abhängigkeiten prüfen",
+  "queue.fixThenRetry": "Versuche den Download nach dem Anpassen der Einstellungen erneut.",
+  "queue.errorDetails": "Technische Details",
+  "error.retryNotAvailable": "Der Download wird beendet oder sein Status hat sich geändert. Warte kurz und versuche es erneut.",
+  "error.ffmpegNotFound": "FFmpeg wurde nicht gefunden. Installiere es unter Einstellungen → Abhängigkeiten.",
 }
 
 export default de

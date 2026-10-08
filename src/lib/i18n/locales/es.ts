@@ -337,6 +337,14 @@ const es: typeof en = {
   "download.sponsor.filler": "Contenido de relleno",
   "download.sponsor.interaction": "Solicitudes de interacción",
   "download.sponsor.music_offtopic": "Partes sin música",
+  "download.remainingTime": "Tiempo restante aprox.:",
+  "download.calculatingTime": "Calculando tiempo…",
+  "queue.changeDirectory": "Cambiar carpeta y reintentar",
+  "queue.reviewDependencies": "Revisar dependencias",
+  "queue.fixThenRetry": "Después de ajustar la configuración, vuelve a reintentar.",
+  "queue.errorDetails": "Detalles técnicos",
+  "error.retryNotAvailable": "La descarga está terminando o ya cambió de estado. Espera un momento y vuelve a intentarlo.",
+  "error.ffmpegNotFound": "No se encontró FFmpeg. Instálalo desde Ajustes → Dependencias.",
 }
 
 export default es

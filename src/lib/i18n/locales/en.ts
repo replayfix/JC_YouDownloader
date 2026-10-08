@@ -379,6 +379,14 @@ const en: Record<string, string> = {
   "download.sponsor.filler": "Filler",
   "download.sponsor.interaction": "Interaction reminder",
   "download.sponsor.music_offtopic": "Non-music sections",
+  "download.remainingTime": "Estimated time remaining:",
+  "download.calculatingTime": "Calculating time…",
+  "queue.changeDirectory": "Change folder and retry",
+  "queue.reviewDependencies": "Review dependencies",
+  "queue.fixThenRetry": "After adjusting the settings, retry this download.",
+  "queue.errorDetails": "Technical details",
+  "error.retryNotAvailable": "The download is finishing or its status has changed. Wait a moment and try again.",
+  "error.ffmpegNotFound": "FFmpeg was not found. Install it from Settings → Dependencies.",
 }
 
 export default en

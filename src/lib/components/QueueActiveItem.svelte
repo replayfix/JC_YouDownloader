@@ -2,6 +2,7 @@
   import type { DownloadTaskInfo } from "$lib/bindings"
   import { t } from "$lib/i18n/index.svelte"
   import { fade } from "svelte/transition"
+  import { estimatedTime, failureSummary, recoveryAction, type RecoveryAction } from "$lib/ytdlp/download-feedback"
 
   let {
     item,
@@ -11,6 +12,7 @@
     onCancel,
     onRetry,
     onToggleError,
+    onRecover,
   }: {
     item: DownloadTaskInfo
     errorExpanded: boolean
@@ -19,9 +21,13 @@
     onCancel: () => void
     onRetry: () => void
     onToggleError: () => void
+    onRecover: (action: RecoveryAction) => void
   } = $props()
 
   const thumbnail = $derived(item.videoId.trim() ? `https://i.ytimg.com/vi/${item.videoId}/mqdefault.jpg` : null)
+  const recovery = $derived(recoveryAction(item.errorMessage))
+  const eta = $derived(estimatedTime(item.eta))
+  const failureMessage = $derived(failureSummary(item.errorMessage, t))
 
   function hideThumb(e: Event) {
     (e.currentTarget as HTMLImageElement).remove()
@@ -46,10 +52,11 @@
       <h4 class="font-medium text-yt-text text-sm truncate">{item.title}</h4>
       <span class="text-[10px] px-1.5 py-0.5 rounded bg-yt-overlay border border-yt-border text-yt-text-secondary whitespace-nowrap shrink-0">{item.qualityLabel || "N/A"}</span>
     </div>
-    <div class="flex items-center gap-3 text-xs">
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
       {#if item.status === "downloading"}
-        <span class="text-yt-primary font-mono">{item.speed || "0 KiB/s"}</span>
-        <span class="text-yt-text-muted">ETA {item.eta || "--:--"}</span>
+        <span class="text-yt-primary font-mono">{(item.progress || 0).toFixed(0)}%</span>
+        {#if item.speed}<span class="text-yt-primary font-mono">{item.speed}</span>{/if}
+        <span class="text-yt-text-muted">{eta ? `${t("download.remainingTime")} ${eta}` : t("download.calculatingTime")}</span>
         <div class="flex-1 max-w-32 bg-yt-overlay rounded-full h-1 overflow-hidden">
           <div class="bg-yt-primary h-full transition-all duration-300" style="width: {item.progress || 0}%"></div>
         </div>
@@ -57,7 +64,7 @@
         <span class="text-yt-text-secondary">{t("queue.pendingStatus")}</span>
       {:else if item.status === "failed"}
         <button class="text-yt-error hover:underline flex items-center gap-1" onclick={onToggleError}>
-          {item.errorMessage ? t(item.errorMessage) : t("queue.failed")}
+          {failureMessage}
           <span class="material-symbols-outlined text-[14px]">expand_more</span>
         </button>
       {:else if item.status === "cancelled"}
@@ -70,7 +77,19 @@
       {/if}
     </div>
     {#if item.status === "failed" && (item.errorDetail || item.errorMessage) && errorExpanded}
-      <div class="mt-2 text-xs text-yt-error bg-yt-error/5 p-2 rounded border border-yt-error/10 font-mono whitespace-pre-wrap">{item.errorDetail ?? (item.errorMessage ? t(item.errorMessage) : "")}</div>
+      <div class="mt-2 text-xs text-yt-error bg-yt-error/5 p-2 rounded border border-yt-error/10 whitespace-pre-wrap break-words max-h-40 overflow-y-auto">
+        <p class="font-semibold mb-1">{t("queue.errorDetails")}</p>
+        <p class="font-mono">{item.errorDetail ?? (item.errorMessage ? t(item.errorMessage) : "")}</p>
+      </div>
+    {/if}
+    {#if item.status === "failed" && recovery}
+      <div class="mt-2">
+        <button class="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs bg-yt-primary/10 text-yt-primary hover:bg-yt-primary/20 disabled:opacity-40" disabled={retryBusy} onclick={() => recovery && onRecover(recovery)}>
+          <span class="material-symbols-outlined text-[16px]">{recovery === "cookies" ? "cookie" : recovery === "directory" ? "folder_open" : "settings"}</span>
+          {t(recovery === "cookies" ? "download.fixWithCookies" : recovery === "directory" ? "queue.changeDirectory" : "queue.reviewDependencies")}
+        </button>
+        {#if recovery !== "directory"}<p class="mt-1 text-xs text-yt-text-muted">{t("queue.fixThenRetry")}</p>{/if}
+      </div>
     {/if}
   </div>
 
@@ -80,8 +99,9 @@
         <span class="material-symbols-outlined text-[18px] {cancelBusy ? 'animate-spin' : ''}">{cancelBusy ? "progress_activity" : "close"}</span>
       </button>
     {:else if item.status === "failed" || item.status === "cancelled"}
-      <button class="p-1.5 rounded-md hover:bg-yt-primary/10 text-yt-text-muted hover:text-yt-primary transition-colors disabled:opacity-40 disabled:cursor-not-allowed" onclick={onRetry} disabled={retryBusy} title={t("queue.retry")}>
+      <button class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 bg-yt-primary/10 text-yt-primary hover:bg-yt-primary/20 text-xs transition-colors disabled:opacity-40 disabled:cursor-not-allowed" onclick={onRetry} disabled={retryBusy} title={t("queue.retry")}>
         <span class="material-symbols-outlined text-[18px] {retryBusy ? 'animate-spin' : ''}">{retryBusy ? "progress_activity" : "refresh"}</span>
+        {t("queue.retry")}
       </button>
     {/if}
   </div>

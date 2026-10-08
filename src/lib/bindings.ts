@@ -57,9 +57,9 @@ async clearCompleted() : Promise<Result<number, AppError>> {
     else return { status: "error", error: e  as any };
 }
 },
-async retryDownload(taskId: number) : Promise<Result<null, AppError>> {
+async retryDownload(taskId: number, outputDir: string | null) : Promise<Result<null, AppError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("retry_download", { taskId }) };
+    return { status: "ok", data: await TAURI_INVOKE("retry_download", { taskId, outputDir }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };

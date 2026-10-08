@@ -8,6 +8,7 @@
   import { onMount, onDestroy } from "svelte"
   import { openUrl } from "@tauri-apps/plugin-opener"
   import { t, initLocale } from "$lib/i18n/index.svelte"
+  import { estimatedTime, failureSummary } from "$lib/ytdlp/download-feedback"
   import { errorMessage, extractError } from "$lib/utils/errors"
   import { initTheme } from "$lib/theme/index.svelte"
   import { check, type Update } from "@tauri-apps/plugin-updater"
@@ -364,7 +365,7 @@
             // Look up the title before the summary refresh drops the failed row from
             // activeDownloads. "cancelled" stays silent — it's user-initiated.
             const title = activeDownloads.find(d => d.id === data.taskId)?.title
-            showErrorToast(`${t("layout.downloadFailedToast", { title: title || "video" })} — ${t(data.message ?? "error.downloadFailed")}`)
+            showErrorToast(`${t("layout.downloadFailedToast", { title: title || "video" })} — ${failureSummary(data.message ?? null, t)}`)
           }
           debouncedLoadQueueSummary()
         }
@@ -1116,6 +1117,7 @@
               <span class="text-[10px] text-yt-text-muted">{item.speed || ""}</span>
             </div>
             <!-- Progress Bar Background -->
+            <p class="mt-1 text-[10px] text-yt-text-muted relative z-10">{estimatedTime(item.eta) ? `${t("download.remainingTime")} ${estimatedTime(item.eta)}` : t("download.calculatingTime")}</p>
             <div class="absolute bottom-0 left-0 h-0.5 bg-yt-primary/20 w-full">
               <div class="h-full bg-yt-primary transition-all duration-300" style="width: {item.progress || 0}%"></div>
             </div>
