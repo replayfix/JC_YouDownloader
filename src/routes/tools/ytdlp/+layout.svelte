@@ -722,7 +722,7 @@
     <!-- App Title/Logo -->
     <div class="px-3 pb-6 pt-2">
        <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-yt-primary/10 flex items-center justify-center text-yt-primary shrink-0 transition-colors">
+        <div class="w-8 h-8 flex items-center justify-center shrink-0">
           <BrandLogo />
         </div>
         <div class="min-w-0 flex-1">
