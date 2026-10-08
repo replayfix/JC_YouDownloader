@@ -1,4 +1,4 @@
-# JC_YouDownloader
+# YouDownloader
 
  
 A modern, cross-platform desktop application for downloading videos using yt-dlp.
@@ -41,8 +41,8 @@ Built with Tauri 2.0 (Rust) and SvelteKit, providing a clean and intuitive inter
 
 ```bash
 # Clone the repository
-git clone https://github.com/replayfix/JC_YouDownloader.git
-cd JC_YouDownloader
+git clone https://github.com/replayfix/YouDownloader.git
+cd YouDownloader
 
 # Install frontend dependencies
 bun install
@@ -58,7 +58,7 @@ The production build output will be in `src-tauri/target/release/bundle/`.
 
 ## Credits & Third-party Licenses
 
-JC_YouDownloader is based on [Yummy-Yt-Dlp by shlifedev](https://github.com/shlifedev/Yummy-Yt-Dlp).
+YouDownloader is based on [Yummy-Yt-Dlp by shlifedev](https://github.com/shlifedev/Yummy-Yt-Dlp).
 The application name, package name (`jc-youdownloader`), and identifier
 (`com.jc.youdownloader`) belong to this adaptation. Windows portable updates
 use signed ZIP files published in this repository's GitHub Releases.
@@ -121,7 +121,7 @@ con `portable.flag` y `binaries`. La configuración y el historial se guardan
 El portable de Windows consulta:
 
 ```text
-https://github.com/replayfix/JC_YouDownloader/releases/latest/download/latest.json
+https://github.com/replayfix/YouDownloader/releases/latest/download/latest.json
 ```
 
 El botón «Buscar actualizaciones» descarga un ZIP cuya firma se verifica antes

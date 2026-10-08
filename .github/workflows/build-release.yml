@@ -77,7 +77,7 @@ jobs:
         with:
           tag_name: ${{ steps.release.outputs.tag }}
           target_commitish: ${{ github.sha }}
-          name: JC_YouDownloader ${{ steps.release.outputs.version }}
+          name: YouDownloader ${{ steps.release.outputs.version }}
           generate_release_notes: true
           make_latest: true
           fail_on_unmatched_files: true

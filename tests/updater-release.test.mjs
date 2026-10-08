@@ -13,10 +13,10 @@ test("first release is newer than the app even without Git tags", () => {
 })
 
 test("portable manifest points to the signed ZIP in the correct GitHub release", () => {
-  const manifest = createManifest("0.1.1", "JC Downloader_portable.zip", "signed ZIP", "replayfix/JC_YouDownloader")
-  assert.equal(manifest.platforms["windows-x86_64"].url, "https://github.com/replayfix/JC_YouDownloader/releases/download/v0.1.1/JC%20Downloader_portable.zip")
+  const manifest = createManifest("0.1.1", "JC Downloader_portable.zip", "signed ZIP", "replayfix/YouDownloader")
+  assert.equal(manifest.platforms["windows-x86_64"].url, "https://github.com/replayfix/YouDownloader/releases/download/v0.1.1/JC%20Downloader_portable.zip")
   assert.equal(manifest.platforms["windows-x86_64"].signature, "signed ZIP")
-  assert.throws(() => createManifest("0.1.1", "setup.exe", "signed", "replayfix/JC_YouDownloader"))
-  assert.throws(() => createManifest("0.1.1", "portable.zip", "", "replayfix/JC_YouDownloader"))
-  assert.throws(() => createManifest("0.1.1", "../portable.zip", "signed", "replayfix/JC_YouDownloader"))
+  assert.throws(() => createManifest("0.1.1", "setup.exe", "signed", "replayfix/YouDownloader"))
+  assert.throws(() => createManifest("0.1.1", "portable.zip", "", "replayfix/YouDownloader"))
+  assert.throws(() => createManifest("0.1.1", "../portable.zip", "signed", "replayfix/YouDownloader"))
 })

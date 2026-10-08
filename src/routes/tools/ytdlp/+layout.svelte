@@ -604,7 +604,7 @@
       }
     } catch {
       try {
-        const response = await fetch("https://api.github.com/repos/replayfix/JC_YouDownloader/releases/latest")
+        const response = await fetch("https://api.github.com/repos/replayfix/YouDownloader/releases/latest")
         updateCheckError = response.status === 404 ? "update.noRelease" : "update.checkFailed"
       } catch { updateCheckError = "update.checkFailed" }
     } finally {
@@ -1203,7 +1203,7 @@
         {:else if updateAvailable && updateInfo}
           {#if updateMode !== "portable"}
             <p class="text-sm text-yt-text-secondary mb-4">{t("update.portableOnly")}</p>
-            <button class="mb-3 text-sm text-yt-primary hover:underline" onclick={() => openUrl("https://github.com/replayfix/JC_YouDownloader/releases/latest")}>{t("update.openReleases")}</button>
+            <button class="mb-3 text-sm text-yt-primary hover:underline" onclick={() => openUrl("https://github.com/replayfix/YouDownloader/releases/latest")}>{t("update.openReleases")}</button>
           {/if}
           {#if updateInfo.body}
             <div class="mb-4">
