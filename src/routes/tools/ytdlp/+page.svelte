@@ -1168,95 +1168,6 @@
              </div>
           </div>
 
-          <!-- Bottom Row: Filename Options -->
-          <div class="flex items-center gap-4 text-xs text-yt-text-secondary border-t border-yt-border/50 pt-2 px-1 cursor-default">
-             <span class="font-medium text-yt-text-secondary w-auto shrink-0 opacity-70">{t("download.include")}</span>
-             <label class="flex items-center gap-1.5 hover:text-yt-text transition-colors">
-                <input type="checkbox" bind:checked={templateUploaderFolder} onchange={saveTemplateSettings} class="rounded border-yt-border text-yt-primary focus:ring-0 w-3.5 h-3.5 cursor-default" />
-                <span>{t("download.uploaderFolder")}</span>
-             </label>
-             <label class="flex items-center gap-1.5 hover:text-yt-text transition-colors">
-                <input type="checkbox" bind:checked={templateUploadDate} onchange={saveTemplateSettings} class="rounded border-yt-border text-yt-primary focus:ring-0 w-3.5 h-3.5 cursor-default" />
-                <span>{t("download.uploadDate")}</span>
-             </label>
-             <label class="flex items-center gap-1.5 hover:text-yt-text transition-colors">
-                <input type="checkbox" bind:checked={templateVideoId} onchange={saveTemplateSettings} class="rounded border-yt-border text-yt-primary focus:ring-0 w-3.5 h-3.5 cursor-default" />
-                <span>{t("download.videoId")}</span>
-             </label>
-             <span class="ml-auto min-w-0 flex items-center gap-1.5 text-[11px] text-yt-text-muted truncate" title={templatePreview()}>
-                <span class="opacity-70 shrink-0">{t("download.filenamePreview")}</span>
-                <span class="font-mono text-yt-text-secondary truncate">{templatePreview()}</span>
-             </span>
-          </div>
-
-          <!-- Cookie Browser & Concurrent Downloads -->
-          <div class="flex items-center gap-4 text-xs text-yt-text-secondary border-t border-yt-border/50 pt-2 px-1 cursor-default">
-             <!-- Cookie Browser -->
-             <div class="flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-[16px] text-amber-500">cookie</span>
-                <span
-                  role="note"
-                  class="font-medium text-yt-text-secondary shrink-0 opacity-70"
-                  onmouseenter={(e) => showTooltip(e, t("settings.cookieHelp"))}
-                  onmouseleave={hideTooltip}
-                >{t("download.cookie")}</span>
-                <select
-                  bind:this={cookieSelectEl}
-                  class="bg-transparent border-none p-0 text-xs text-yt-text font-medium focus:ring-0 cursor-default"
-                  bind:value={cookieBrowser}
-                  onchange={() => autoSaveSettings({ cookieBrowser })}
-                >
-                  <option value={null}>{t("settings.none")}</option>
-                  {#each browsers as browser}
-                    <option value={browser}>{browser}</option>
-                  {/each}
-                  {#if cookieBrowser && !browsers.includes(cookieBrowser)}
-                    <!-- Saved browser no longer detected (e.g. uninstalled): keep it visible
-                         with a warning instead of letting the select render blank. -->
-                    <option value={cookieBrowser}>{t("settings.cookieBrowserMissing", { browser: cookieBrowser })}</option>
-                  {/if}
-                </select>
-             </div>
-
-             {#if currentPlatform === "windows" && cookieBrowser && ["chrome", "edge", "brave"].some(b => cookieBrowser?.toLowerCase().includes(b))}
-               <p class="text-[10px] text-amber-500">{t("settings.chromiumCookieWarning")}</p>
-             {/if}
-
-             <div class="h-3 w-px bg-yt-border/50"></div>
-
-             <!-- Concurrent Downloads -->
-             <div class="flex items-center gap-1.5 flex-1">
-                <span class="material-symbols-outlined text-[16px] text-yt-primary">bolt</span>
-                <span
-                  role="note"
-                  class="font-medium text-yt-text-secondary shrink-0 opacity-70"
-                  onmouseenter={(e) => showTooltip(e, t("settings.concurrentDesc"))}
-                  onmouseleave={hideTooltip}
-                >{t("download.concurrent")}</span>
-                <input
-                  type="range"
-                  class="flex-1 max-w-24 accent-yt-primary h-1"
-                  min="1" max="10"
-                  bind:value={maxConcurrent}
-                  onchange={() => autoSaveSettings({ maxConcurrent })}
-                />
-                <span class="text-xs font-mono text-yt-text font-bold w-4 text-center">{maxConcurrent}</span>
-             </div>
-
-             <!-- Advanced drawer trigger -->
-             <button
-               type="button"
-               class="shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-yt-border hover:border-yt-primary/40 hover:bg-yt-highlight text-xs font-medium text-yt-text-secondary transition-colors"
-               onclick={() => advancedExpanded = true}
-             >
-                <span class="material-symbols-outlined text-[15px]">tune</span>
-                <span>{t("download.advanced")}</span>
-                {#if activeAdvancedCount > 0}
-                  <span class="inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full bg-yt-primary text-white text-[10px] font-semibold">{activeAdvancedCount}</span>
-                {/if}
-             </button>
-          </div>
-
        </div>
     </div>
 
@@ -1420,14 +1331,6 @@
             <div class="flex flex-col items-center justify-center py-20 select-none">
                <span class="material-symbols-outlined text-6xl text-yt-text-border mb-4 opacity-50">download_for_offline</span>
                <p class="text-yt-text-secondary text-sm opacity-70">{t("download.emptyState")}</p>
-               <button
-                 type="button"
-                 onclick={handlePasteUrl}
-                 class="mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-yt-surface border border-yt-border hover:border-yt-primary/40 hover:bg-yt-highlight text-sm font-medium text-yt-text-secondary hover:text-yt-text transition-colors"
-               >
-                 <span class="material-symbols-outlined text-[18px]">content_paste</span>
-                 <span>{t("download.pasteFromClipboard")}</span>
-               </button>
             </div>
          {/if}
        </div>

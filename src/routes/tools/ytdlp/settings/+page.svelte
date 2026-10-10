@@ -2,6 +2,8 @@
   import { commands } from "$lib/bindings"
   import type { AppSettings } from "$lib/bindings"
   import { defaultAdvancedOptions } from "$lib/advanced"
+  import { countActiveAdvancedOptions } from "$lib/ytdlp/download-page"
+  import AdvancedOptionsDrawer from "$lib/components/AdvancedOptionsDrawer.svelte"
   import { onMount } from "svelte"
   import { t, setLocale, getLocale, supportedLocales } from "$lib/i18n/index.svelte"
   import { setTheme, getTheme } from "$lib/theme/index.svelte"
@@ -30,11 +32,14 @@
 
   let loading = $state(true)
   let saveError = $state<string | null>(null)
+  let advancedExpanded = $state(false)
+  let advanced = $state(defaultAdvancedOptions())
+  const activeAdvancedCount = $derived(countActiveAdvancedOptions(advanced))
 
   onMount(async () => {
     try {
       const r = await commands.getSettings()
-      if (r.status === "ok") settings = r.data
+      if (r.status === "ok") { settings = r.data; advanced = settings.advanced ?? defaultAdvancedOptions() }
     } catch (e) { console.error("Failed to load settings:", e) }
     loading = false
   })
@@ -82,6 +87,15 @@
     settings.theme = themeId
     await autoSave()
   }
+
+  async function saveAdvanced() { settings.advanced = $state.snapshot(advanced); await autoSave() }
+  async function resetAdvanced() {
+    advanced = defaultAdvancedOptions()
+    settings.advanced = $state.snapshot(advanced)
+    await autoSave()
+  }
+  const showTooltip = (_event: MouseEvent, _text: string) => {}
+  const hideTooltip = () => {}
 </script>
 
 {#if loading}
@@ -124,6 +138,36 @@
               <div class="w-9 h-5 bg-yt-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-yt-primary"></div>
             </label>
          </div>
+      </div>
+    </section>
+
+    <!-- Appearance -->
+    <section>
+      <h3 class="text-xs font-semibold text-yt-text-secondary uppercase tracking-wider mb-4 px-1">{t("settings.downloadOptions")}</h3>
+      <div class="bg-yt-surface border border-yt-border rounded-lg divide-y divide-yt-border/50 overflow-hidden">
+        <div class="p-4">
+          <h4 class="text-sm font-medium text-yt-text mb-3">{t("download.include")}</h4>
+          <div class="flex flex-wrap gap-4 text-sm text-yt-text-secondary">
+            <label class="flex items-center gap-2"><input type="checkbox" bind:checked={settings.templateUploaderFolder} onchange={autoSave} class="rounded border-yt-border text-yt-primary" />{t("download.uploaderFolder")}</label>
+            <label class="flex items-center gap-2"><input type="checkbox" bind:checked={settings.templateUploadDate} onchange={autoSave} class="rounded border-yt-border text-yt-primary" />{t("download.uploadDate")}</label>
+            <label class="flex items-center gap-2"><input type="checkbox" bind:checked={settings.templateVideoId} onchange={autoSave} class="rounded border-yt-border text-yt-primary" />{t("download.videoId")}</label>
+          </div>
+        </div>
+        <div class="p-4 flex items-center justify-between gap-4">
+          <div><h4 class="text-sm font-medium text-yt-text">{t("download.cookie")}</h4><p class="text-xs text-yt-text-secondary">{t("settings.cookieHelp")}</p></div>
+          <select bind:value={settings.cookieBrowser} onchange={autoSave} class="bg-yt-bg text-yt-text border border-yt-border rounded-md px-3 py-1.5 text-xs">
+            <option value={null}>{t("settings.none")}</option>
+            {#each ["chrome", "edge", "brave", "firefox"] as browser}<option value={browser}>{browser}</option>{/each}
+          </select>
+        </div>
+        <div class="p-4 flex items-center justify-between gap-4">
+          <div><h4 class="text-sm font-medium text-yt-text">{t("download.concurrent")}</h4><p class="text-xs text-yt-text-secondary">{t("settings.concurrentDesc")}</p></div>
+          <div class="flex items-center gap-3"><input type="range" min="1" max="10" bind:value={settings.maxConcurrent} onchange={autoSave} class="accent-yt-primary" /><span class="text-sm font-mono text-yt-text">{settings.maxConcurrent}</span></div>
+        </div>
+        <div class="p-4 flex items-center justify-between gap-4">
+          <div><h4 class="text-sm font-medium text-yt-text">{t("download.advanced")}</h4><p class="text-xs text-yt-text-secondary">{t("settings.advancedDesc")}</p></div>
+          <button type="button" onclick={() => advancedExpanded = true} class="px-3 py-1.5 rounded-md border border-yt-border text-xs text-yt-text hover:bg-yt-highlight">{t("download.advanced")} {#if activeAdvancedCount > 0}({activeAdvancedCount}){/if}</button>
+        </div>
       </div>
     </section>
 
@@ -197,4 +241,15 @@
     </section>
 
   </div>
+  {#if advancedExpanded}
+    <AdvancedOptionsDrawer
+      bind:advanced
+      {activeAdvancedCount}
+      onClose={() => (advancedExpanded = false)}
+      onSave={saveAdvanced}
+      onReset={resetAdvanced}
+      {showTooltip}
+      {hideTooltip}
+    />
+  {/if}
 {/if}

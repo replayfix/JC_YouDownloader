@@ -206,6 +206,8 @@ const en: Record<string, string> = {
   "settings.language": "Language",
   "settings.theme": "Theme",
   "settings.general": "General",
+  "settings.downloadOptions": "Download options",
+  "settings.advancedDesc": "Additional yt-dlp settings",
   "settings.appearance": "Appearance",
   "settings.dependencies": "Dependencies",
   "settings.notInstalled": "Not installed",

@@ -190,6 +190,8 @@ const es: typeof en = {
   "settings.language": "Idioma",
   "settings.theme": "Tema",
   "settings.general": "General",
+  "settings.downloadOptions": "Opciones de descarga",
+  "settings.advancedDesc": "Configuraciones adicionales de yt-dlp",
   "settings.appearance": "Apariencia",
   "settings.dependencies": "Dependencias",
   "settings.notInstalled": "No instalado",

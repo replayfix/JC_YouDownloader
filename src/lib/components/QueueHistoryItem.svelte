@@ -31,7 +31,7 @@
   }
 </script>
 
-<div class="group flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-yt-highlight/40 transition-colors">
+<div class="group flex items-center gap-3 px-3 py-2.5 rounded-lg border border-yt-primary/25 bg-yt-primary/10 hover:bg-yt-primary/15 transition-colors">
   <div class="relative w-16 h-10 rounded overflow-hidden bg-yt-overlay-subtle shrink-0">
     <span class="absolute inset-0 flex items-center justify-center material-symbols-outlined text-yt-success/60 text-[18px]">check_circle</span>
     {#if thumbnail}
@@ -50,7 +50,7 @@
   <div class="flex items-center gap-1 shrink-0">
     {#if item.filePath}
       <button
-        class="opacity-0 group-hover:opacity-100 text-yt-text-muted hover:text-yt-primary transition-all p-1.5 rounded-md hover:bg-yt-primary/10"
+        class="text-yt-text-muted hover:text-yt-primary transition-colors p-1.5 rounded-md hover:bg-yt-primary/10"
         onclick={onOpen}
         aria-label={t("history.openFile")}
         title={t("history.openFile")}
@@ -58,7 +58,7 @@
         <span class="material-symbols-outlined text-[18px]">play_arrow</span>
       </button>
       <button
-        class="opacity-0 group-hover:opacity-100 text-yt-text-muted hover:text-yt-primary transition-all p-1.5 rounded-md hover:bg-yt-primary/10"
+        class="text-yt-text-muted hover:text-yt-primary transition-colors p-1.5 rounded-md hover:bg-yt-primary/10"
         onclick={onReveal}
         aria-label={t("history.revealInFolder")}
         title={t("history.revealInFolder")}
@@ -67,7 +67,7 @@
       </button>
     {/if}
     <button
-      class="opacity-0 group-hover:opacity-100 text-yt-text-muted hover:text-yt-error transition-all p-1.5 rounded-md hover:bg-yt-error/10"
+      class="text-yt-text-muted hover:text-yt-error transition-colors p-1.5 rounded-md hover:bg-yt-error/10"
       onclick={onDelete}
       disabled={deleteBusy}
       aria-label={t("history.deleteItem")}
